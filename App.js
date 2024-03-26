@@ -1,27 +1,54 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Asset } from "expo-asset";
 import { Image } from "react-native";
+import registerForPushNotifications from "./notification/registerForPushNotifications";
 import { WebView } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
+import * as Notifications from 'expo-notifications';
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-const DriveButton = ({ onFetchLocation }) => {
-  return (
-    <TouchableOpacity style={styles.button} onPress={onFetchLocation}>
-      <Text style={styles.buttonText}>위치 정보 받기</Text>
-    </TouchableOpacity>
-  );
-};
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function App() {
+  
   const webViewRef = useRef(null);
   const source = require("./assets/tmap.html");
   const webviewSource = Image.resolveAssetSource(source);
 
   const intervalRef = useRef(null);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
   const [locationData, setLocationData] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
   const [buttonTitle, setButtonTitle] = useState("버스 추적 하기");
+
+
+  useEffect(() => {
+    registerForPushNotifications().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
 
   // 메시지를 받았을 때 실행될 함수
   const handleOnMessage = (event) => {
