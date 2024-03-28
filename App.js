@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Asset } from "expo-asset";
 import { Image } from "react-native";
 import registerForPushNotifications from "./notification/registerForPushNotifications";
 import { WebView } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
-import * as Notifications from 'expo-notifications';
+import * as Notifications from "expo-notifications";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -17,58 +15,36 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
-  
   const webViewRef = useRef(null);
   const source = require("./assets/tmap.html");
   const webviewSource = Image.resolveAssetSource(source);
-
   const intervalRef = useRef(null);
   const notificationListener = useRef();
   const responseListener = useRef();
-  const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
-  const [locationData, setLocationData] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
   const [buttonTitle, setButtonTitle] = useState("버스 추적 하기");
 
-
   useEffect(() => {
-    registerForPushNotifications().then(token => setExpoPushToken(token));
+    // 권한 허가 후  TOKEN 값 받기
+    registerForPushNotifications();
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
-    });
-
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
-
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
+    // 알림 수신 리스너
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
   }, []);
 
-
-  // 메시지를 받았을 때 실행될 함수
-  const handleOnMessage = (event) => {
-    const message = event.nativeEvent.data;
-    console.log(message);
-  };
-
-  
-
+  // 서버에서 셔틀버스 위도 경도 가져오기
   const fetchLocation = async () => {
     const serverUrl =
       "https://bus-tracking-server-mu.vercel.app/api/read?filePath=data.json";
     try {
-      const response = await fetch(serverUrl, {
-        method: "GET",
-      });
+      const response = await fetch(serverUrl, { method: "GET" });
 
       const data = await response.json();
       let contentObj = JSON.parse(data.content);
-
       let latitude = contentObj.latitude;
       let longitude = contentObj.longitude;
 
@@ -86,8 +62,6 @@ export default function App() {
     }
   };
 
-
-
   const toggleTracking = () => {
     if (isTracking) {
       // 인터벌 정지
@@ -97,7 +71,7 @@ export default function App() {
       setButtonTitle("버스 추적하기");
     } else {
       // 인터벌 시작
-      intervalRef.current = setInterval(fetchLocation, 1000); // 15초마다 실행
+      intervalRef.current = setInterval(fetchLocation, 1000); // 10초
       setIsTracking(true);
       setButtonTitle("버스 추적 진행중");
     }
@@ -109,20 +83,15 @@ export default function App() {
         ref={webViewRef}
         style={styles.webviewStyle}
         originWhitelist={["*"]}
-        onMessage={handleOnMessage} // 메시지 수신 핸들러
         source={webviewSource}
       />
-      
-
       <TouchableOpacity
         onPress={toggleTracking}
         style={{ backgroundColor: "blue", padding: 10, borderRadius: 5 }}
       >
         <Text style={{ color: "white", fontSize: 16 }}>{buttonTitle}</Text>
       </TouchableOpacity>
-
       <StatusBar style="auto" />
-    
     </View>
   );
 }
@@ -134,18 +103,17 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   webviewStyle: {
-    flex: 1, // WebView를 전체 화면으로 설정
+    flex: 1,
   },
   button: {
-    position: "absolute", // 버튼을 WebView 위에 위치시킵니다.
-    bottom: 20, // 하단에서 20px 떨어진 위치에
-    left: 20, // 왼쪽에서 20px 떨어진 위치에
-    right: 20, // 오른쪽에서 20px 떨어진 위치에
+    position: "absolute",
+    bottom: 20,
+    right: 20,
     backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
-    justifyContent: "center", // 버튼 내부 텍스트를 가운데 정렬합니다.
+    justifyContent: "center",
   },
   buttonText: {
     color: "white",
