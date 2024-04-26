@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Image } from "react-native";
+import { Button, Image } from "react-native";
 import registerForPushNotifications from "./notification/registerForPushNotifications";
 import { WebView } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
