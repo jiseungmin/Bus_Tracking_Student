@@ -26,17 +26,16 @@
           zoom: 17,
         });
 
-        // 온양온천 경로
+        // 온양온천역 경로
         var coordinates = [
-          new Tmapv2.LatLng(36.79764, 127.079), // Sixth coordinate
-          new Tmapv2.LatLng(36.79776, 127.0801), // Seventh coordinate
-          new Tmapv2.LatLng(36.7975, 127.0861), // Eighth coordinate
-          new Tmapv2.LatLng(36.80026, 127.0857), // Ninth coordinate
-          new Tmapv2.LatLng(36.80039, 127.0868), // Tenth coordinate
-          new Tmapv2.LatLng(36.79579, 127.0876), // Eleventh coordinate
-          new Tmapv2.LatLng(36.79897, 127.0939), // Eleventh coordinate
-          new Tmapv2.LatLng(36.80006, 127.0973), // Twelfth coordinate
-          new Tmapv2.LatLng(36.80161, 127.1054), // Thirteenth coordinate
+          new Tmapv2.LatLng(36.82364, 127.1239), // Sixteenth coordinate
+          new Tmapv2.LatLng(36.82642, 127.1329), // Seventeenth coordinate
+          new Tmapv2.LatLng(36.82477, 127.1529), // Eighteenth coordinate
+          new Tmapv2.LatLng(36.82472, 127.1592), // Nineteenth coordinate
+          new Tmapv2.LatLng(36.82402, 127.1604), // Twentieth coordinate
+          new Tmapv2.LatLng(36.82127, 127.1624), // Twenty-first coordinate
+          new Tmapv2.LatLng(36.81895, 127.1584), // Twenty-second coordinate
+          new Tmapv2.LatLng(36.81887, 127.1535), // Twenty-third coordinate
         ];
 
         polyline = new Tmapv2.Polyline({
@@ -48,18 +47,22 @@
 
         var currentMarker = null;
 
+        document.addEventListener("DOMContentLoaded", initTmap);
+
         document.addEventListener("message", function (event) {
           try {
             var data = JSON.parse(event.data);
             var latitude = data.latitude;
             var longitude = data.longitude;
+            var User_latitude = data.User_latitude;
+            var User_longitude = data.User_longitude;
 
             if (currentMarker) {
               currentMarker.setMap(null);
               currentMarker = null;
             }
 
-            var moveLatLng = new Tmapv2.LatLng(latitude, longitude);
+            var moveLatLng = new Tmapv2.LatLng(User_latitude, User_longitude);
             map.setCenter(moveLatLng);
 
             if (map && latitude && longitude) {
@@ -68,30 +71,34 @@
                 map: map,
               });
             } else {
-              window.ReactNativeWebView.postMessage(
+              document.ReactNativeWebView.postMessage(
                 "error: map or coordinates not ready"
               );
             }
           } catch (error) {
-            window.ReactNativeWebView.postMessage(
+            document.ReactNativeWebView.postMessage(
               "error: parsing message from React Native"
             );
             console.error("Error parsing message from React Native:", error);
           }
         });
 
+        window.addEventListener("DOMContentLoaded", initTmap);
+
         window.addEventListener("message", function (event) {
           try {
             var data = JSON.parse(event.data);
             var latitude = data.latitude;
             var longitude = data.longitude;
+            var User_latitude = data.User_latitude;
+            var User_longitude = data.User_longitude;
 
             if (currentMarker) {
               currentMarker.setMap(null);
               currentMarker = null;
             }
 
-            var moveLatLng = new Tmapv2.LatLng(latitude, longitude);
+            var moveLatLng = new Tmapv2.LatLng(User_latitude, User_latitude);
             map.setCenter(moveLatLng);
 
             if (map && latitude && longitude) {

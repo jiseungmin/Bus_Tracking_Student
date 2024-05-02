@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
-import * as Location from "expo-location"; // expo-location 라이브러리 임포트
+import React, { useState, useEffect } from "react";
+import * as Location from "expo-location";
+import * as Notifications from "expo-notifications";
+import registerForPushNotifications from "../notification/registerForPushNotifications";
 import {
   View,
   Text,
@@ -9,17 +11,29 @@ import {
 } from "react-native";
 
 const Home = ({ navigation }) => {
+  const [notification, setNotification] = useState(false);
+
   // 각 항목을 클릭했을 때 호출될 함수들
   const goToScreen = (screenName) => {
-    navigation.navigate("Stage", { screenName });
+    navigation.navigate("Map", { screenName });
   };
 
   useEffect(() => {
+    // 알림 권한 허가 후  TOKEN 값 받기
+    registerForPushNotifications();
+
     let { status } = Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       console.log("위치 정보 접근 권한이 거부되었습니다.");
       return;
     }
+
+    // 알림 수신 리스너
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => true
@@ -62,19 +76,19 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF", // 배경색을 하얀색으로 설정합니다.
-    alignItems: "center", // 가로축을 중앙에 정렬합니다.
-    justifyContent: "center", // 세로축을 중앙에 정렬합니다.
-    paddingVertical: 20, // 위아래 여백을 줍니다.
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
   },
   title: {
-    fontSize: 26, // 제목의 글꼴 크기를 설정합니다.
-    fontWeight: "bold", // 글꼴 두께를 굵게 합니다.
-    marginBottom: 40, // 제목 아래의 여백을 줍니다.
+    fontSize: 26,
+    fontWeight: "bold",
+    marginBottom: 40,
   },
   item: {
-    fontSize: 20, // 항목의 글꼴 크기를 설정합니다.
-    marginBottom: 20, // 항목 간의 여백을 줍니다.
+    fontSize: 20,
+    marginBottom: 20,
   },
   textStyle: {
     color: "black",

@@ -1,9 +1,9 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Button, Image } from "react-native";
-import registerForPushNotifications from "../notification/registerForPushNotifications";
+import { Alert, Image } from "react-native";
+import { fetchBusLocation } from "../API/api";
 import { WebView } from "react-native-webview";
+import { StationFileMap } from "../config/stations";
 import * as Notifications from "expo-notifications";
-
+import React, { useRef, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,17 @@ import {
   Dimensions,
 } from "react-native";
 
+const { width, height } = Dimensions.get("window");
+
+/* TODO 운전자 앱에서 버스 정보및 시간표 데이터 받기 */
+const busInfo = {
+  busNumber: "11",
+  route: "노선명 천안터미널",
+  number: "차량 번호 77사 7973",
+  time: "운행 시간 9:30~10:00~10:30",
+};
+
+/* 알림 처리 */
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -19,36 +30,19 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-const { width, height } = Dimensions.get("window");
 
-const busInfo = {
-  route: "노선명 천안터미널",
-  time: "운행 시간 9:30~10:00~10:30",
-  number: "차량 번호 77사 7973",
-  busNumber: "11",
-};
-
-const Stage = ({ route, navigation }) => {
+const Map = ({ route, navigation }) => {
   const webViewRef = useRef(null);
   const notificationListener = useRef();
   const [notification, setNotification] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [buttonTitle, setButtonTitle] = useState("현재 버스 위치 확인");
 
   const Station = route.params.screenName;
-  const StationFileMap = {
-    Cheonan_Terminal: require("../assets/tmap_Cheonan_Terminal.html"),
-    Cheonan_Station: require("../assets/tmap_Cheonan_Station.html"),
-    Cheonan_Asan_Station: require("../assets/tmap_Cheonan_Asan_Station.html"),
-    Onyang_Oncheon_Station: require("../assets/tmap_Onyang_Oncheon_Station.html"),
-    Cheonan_Campus: require("../assets/tmap_Cheonan_Campus.html"),
-  };
-  const source = StationFileMap[Station];
-  const webviewSource = Image.resolveAssetSource(source);
+  const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
 
+  /* useEffect */
   useEffect(() => {
-    // 권한 허가 후  TOKEN 값 받기
-    registerForPushNotifications();
-
     // 알림 수신 리스너
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -56,25 +50,21 @@ const Stage = ({ route, navigation }) => {
       });
   }, []);
 
-  /* 함수 */
-  const goback = () => {
-    navigation.navigate("Home");
-  };
-
-  // 서버에서 셔틀버스 위도 경도 가져오기
+  /* 버스 위치 트래킹 함수 */
   const fetchLocation = async () => {
-    const serverUrl =
-      "https://bus-tracking-server-mu.vercel.app/api/read?filePath=data.json";
+    if (isButtonDisabled) {
+      Alert.alert("잠시만 기다려주세요.", "3초 후에 다시 시도할 수 있습니다.", [
+        { text: "확인" },
+      ]);
+      return;
+    }
+    setIsButtonDisabled(true);
     try {
-      const response = await fetch(serverUrl, { method: "GET" });
+      const { latitude, longitude, userLocation } = await fetchBusLocation();
 
-      const data = await response.json();
-      let contentObj = JSON.parse(data.content);
-      let latitude = contentObj.latitude;
-      let longitude = contentObj.longitude;
-
-      console.log(latitude);
-      console.log(longitude);
+      /* TODO 임의로 유저의 위도 경도 설정 해놓음 나중에 수정 */
+      const User_latitude = 36.7988;
+      const User_longitude = 127.077;
 
       // WebView로 위치 정보 전송
       if (webViewRef.current) {
@@ -82,20 +72,31 @@ const Stage = ({ route, navigation }) => {
           JSON.stringify({
             latitude: latitude,
             longitude: longitude,
+            User_latitude: User_latitude,
+            User_longitude: User_longitude,
           })
         );
       }
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 3000);
     }
   };
 
   return (
     <View style={styles.container}>
       {/* 웹뷰 위에 플로팅 뒤로 가기 버튼 */}
-      <TouchableOpacity onPress={goback} style={styles.floatingButton}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("Home");
+        }}
+        style={styles.floatingButton}
+      >
         <Image
-          source={require("../assets/backgo.png")} // 뒤로 가기 아이콘 이미지 경로
+          source={require("../assets/backgo.png")}
           style={styles.backIcon}
         />
       </TouchableOpacity>
@@ -116,10 +117,7 @@ const Stage = ({ route, navigation }) => {
       {/* 사용자 지정 뷰 */}
       <View style={styles.infoContainer}>
         <View>
-          <Image
-            source={require("../assets/bus.png")} // 버스 아이콘 이미지 경로
-            style={styles.busIcon}
-          />
+          <Image source={require("../assets/bus.png")} style={styles.busIcon} />
           <Text
             style={styles.busOrder}
           >{`차량 순서 ${busInfo.busNumber}`}</Text>
@@ -207,4 +205,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Stage;
+export default Map;

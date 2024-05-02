@@ -29,10 +29,10 @@
         // 천안캠퍼스 경로
         var coordinates = [
           new Tmapv2.LatLng(36.8002, 127.0715), // First coordinate
-          new Tmapv2.LatLng(36.80021, 127.0709), // Second coordinate
-          new Tmapv2.LatLng(36.79942, 127.0718), // Third coordinate
-          new Tmapv2.LatLng(36.79807, 127.0718), // Fourth coordinate
-          new Tmapv2.LatLng(36.79804, 127.078), // Fifth coordinate
+          new Tmapv2.LatLng(36.82402, 127.1604), // Twentieth coordinate
+          new Tmapv2.LatLng(36.82127, 127.1624), // Twenty-first coordinate
+          new Tmapv2.LatLng(36.81895, 127.1584), // Twenty-second coordinate
+          new Tmapv2.LatLng(36.81887, 127.1535), // Twenty-third coordinate
         ];
 
         polyline = new Tmapv2.Polyline({
@@ -44,18 +44,22 @@
 
         var currentMarker = null;
 
+        document.addEventListener("DOMContentLoaded", initTmap);
+
         document.addEventListener("message", function (event) {
           try {
             var data = JSON.parse(event.data);
             var latitude = data.latitude;
             var longitude = data.longitude;
+            var User_latitude = data.User_latitude;
+            var User_longitude = data.User_longitude;
 
             if (currentMarker) {
               currentMarker.setMap(null);
               currentMarker = null;
             }
 
-            var moveLatLng = new Tmapv2.LatLng(latitude, longitude);
+            var moveLatLng = new Tmapv2.LatLng(User_latitude, User_longitude);
             map.setCenter(moveLatLng);
 
             if (map && latitude && longitude) {
@@ -64,30 +68,34 @@
                 map: map,
               });
             } else {
-              window.ReactNativeWebView.postMessage(
+              document.ReactNativeWebView.postMessage(
                 "error: map or coordinates not ready"
               );
             }
           } catch (error) {
-            window.ReactNativeWebView.postMessage(
+            document.ReactNativeWebView.postMessage(
               "error: parsing message from React Native"
             );
             console.error("Error parsing message from React Native:", error);
           }
         });
 
+        window.addEventListener("DOMContentLoaded", initTmap);
+
         window.addEventListener("message", function (event) {
           try {
             var data = JSON.parse(event.data);
             var latitude = data.latitude;
             var longitude = data.longitude;
+            var User_latitude = data.User_latitude;
+            var User_longitude = data.User_longitude;
 
             if (currentMarker) {
               currentMarker.setMap(null);
               currentMarker = null;
             }
 
-            var moveLatLng = new Tmapv2.LatLng(latitude, longitude);
+            var moveLatLng = new Tmapv2.LatLng(User_latitude, User_latitude);
             map.setCenter(moveLatLng);
 
             if (map && latitude && longitude) {
