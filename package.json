@@ -34,7 +34,8 @@
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.6.4",
     "react-native-pager-view": "6.2.3",
-    "react-native-gesture-handler": "~2.14.0"
+    "react-native-gesture-handler": "~2.14.0",
+    "expo-location": "~16.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

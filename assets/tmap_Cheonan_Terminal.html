@@ -54,20 +54,15 @@
           new Tmapv2.LatLng(36.81887, 127.1535), // Twenty-third coordinate
         ];
 
-        // Create a new Tmapv2.Polyline object
         polyline = new Tmapv2.Polyline({
-          path: coordinates, // Set the path using the defined coordinates
-          strokeColor: "#FF0000", // Set the stroke color
-          strokeWeight: 5, // Set the stroke weight
-          map: map, // Specify the map where the polyline should be displayed
+          path: coordinates,
+          strokeColor: "#FF0000",
+          strokeWeight: 5,
+          map: map,
         });
 
-     
-        document.addEventListener("DOMContentLoaded", initTmap);
+        var currentMarker = null;
 
-        var currentMarker = null
-
-        // WebView 환경에서는 'window'를 사용합니다.
         document.addEventListener("message", function (event) {
           try {
             var data = JSON.parse(event.data);
@@ -75,32 +70,31 @@
             var longitude = data.longitude;
 
             if (currentMarker) {
-                currentMarker.setMap(null);
-                currentMarker = null;
-              }
+              currentMarker.setMap(null);
+              currentMarker = null;
+            }
 
-            // 마커를 여기에 추가합니다.
+            var moveLatLng = new Tmapv2.LatLng(latitude, longitude);
+            map.setCenter(moveLatLng);
+
             if (map && latitude && longitude) {
-                currentMarker = new Tmapv2.Marker({
+              currentMarker = new Tmapv2.Marker({
                 position: new Tmapv2.LatLng(latitude, longitude),
                 map: map,
               });
             } else {
-              window.ReactNativeWebView.postMessage(
+              document.ReactNativeWebView.postMessage(
                 "error: map or coordinates not ready"
               );
             }
           } catch (error) {
-            window.ReactNativeWebView.postMessage(
+            document.ReactNativeWebView.postMessage(
               "error: parsing message from React Native"
             );
             console.error("Error parsing message from React Native:", error);
           }
         });
 
-        window.addEventListener("DOMContentLoaded", initTmap);
-
-        // WebView 환경에서는 'window'를 사용합니다.
         window.addEventListener("message", function (event) {
           try {
             var data = JSON.parse(event.data);
@@ -108,11 +102,13 @@
             var longitude = data.longitude;
 
             if (currentMarker) {
-                currentMarker.setMap(null);
-                currentMarker = null;
-              }
+              currentMarker.setMap(null);
+              currentMarker = null;
+            }
 
-            // 마커를 여기에 추가합니다.
+            var moveLatLng = new Tmapv2.LatLng(latitude, longitude);
+            map.setCenter(moveLatLng);
+
             if (map && latitude && longitude) {
               new Tmapv2.Marker({
                 position: new Tmapv2.LatLng(latitude, longitude),
