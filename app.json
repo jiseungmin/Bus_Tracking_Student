@@ -16,15 +16,6 @@
     ],
     "plugins": [
       [
-        "expo-notifications",
-        {
-          "icon": "./assets/icon.png",
-          "color": "#ffffff",
-          "sounds": [],
-          "mode": "production"
-        }
-      ],
-      [
         "expo-build-properties",
         {
           "android": {

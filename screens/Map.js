@@ -1,6 +1,6 @@
 import { Alert, Image } from "react-native";
 import { fetchBusLocation } from "../API/api";
-import { WebView } from "react-native-webview";
+import { Platform, WebView } from "react-native-webview";
 import { StationFileMap } from "../config/stations";
 import * as Notifications from "expo-notifications";
 import React, { useRef, useState, useEffect } from "react";
@@ -40,6 +40,9 @@ const Map = ({ route, navigation }) => {
 
   const Station = route.params.screenName;
   const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
+
+  
+
 
   /* useEffect */
   useEffect(() => {
