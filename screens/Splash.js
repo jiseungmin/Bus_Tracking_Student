@@ -18,7 +18,7 @@ const Splash = ({ navigation }) => {
       <Text style={styles.textStyle}>선문 셔틀버스</Text>
 
       <Image
-        source={require("../assets/splash.png")}
+        source={require("../assets/Splash.png")}
         style={styles.imageStyle}
       />
 

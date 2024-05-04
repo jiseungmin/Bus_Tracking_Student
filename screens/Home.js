@@ -12,11 +12,28 @@ import {
 
 const Home = ({ navigation }) => {
   const [notification, setNotification] = useState(false);
+  const [name, setName] = useState('');
 
   // 각 항목을 클릭했을 때 호출될 함수들
   const goToScreen = (screenName) => {
     navigation.navigate("Map", { screenName });
   };
+
+  const internetchecking = async () => {
+    try {
+      const response = await fetch('https://6635b167415f4e1a5e252583.mockapi.io/test/name');
+      const data = await response.json();
+      const names = data.map(item => item.name);
+      console.log(names);
+      setName(names[0]); // 첫 번째 이름 값을 저장
+      return names;
+    } catch (error) {
+      setName("error"); // 첫 번째 이름 값을 저장
+      console.error('Error fetching data:', error);
+      
+      return []; // 오류 발생 시 빈 배열 반환
+    }
+  }
 
   useEffect(() => {
     // 알림 권한 허가 후  TOKEN 값 받기
@@ -45,6 +62,10 @@ const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.textStyle}>SMUBUS</Text>
+
+      <TouchableOpacity onPress={() => internetchecking()}>
+        <Text style={styles.item}>{name || '토큰생성'}</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity onPress={() => registerForPushNotifications()}>
         <Text style={styles.item}>토큰생성</Text>
