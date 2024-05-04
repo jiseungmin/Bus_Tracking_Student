@@ -1,7 +1,8 @@
 // registerForPushNotifications.js
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
-import { Platform } from "react-native"; // Platform 모듈 추가
+
+import { Alert, Platform } from "react-native"; // Platform 모듈 추가
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //const PUSH_ENDPOINT = 'http://192.168.0.8:3000/api/token';
@@ -9,10 +10,13 @@ const PUSH_ENDPOINT = "https://bus-tracking-server-mu.vercel.app/api/token";
 
 // 1. Push Notification Token 토큰 생성
 const registerForPushNotificationsAsync = async () => {
+  console.log("Registerin");
   const alreadyGranted = await AsyncStorage.getItem("notificationsGranted");
 
   if (alreadyGranted === "true") {
     // 이미 권한이 허가되었다면 이후 로직을 실행하지 않음
+    Alert.alert("잠시만 기다려주세요.", "이미 권한 먹음.", [{ text: "확인" }]);
+    console.log("already");
     return;
   }
 
@@ -50,6 +54,7 @@ const registerForPushNotificationsAsync = async () => {
     projectId: Constants.expoConfig.extra.eas.projectId,
   });
   console.log("tokne: ", token);
+  Alert.alert("잠시만 기다려주세요.", token + "토큰생성", [{ text: "확인" }]);
 
   return fetch(PUSH_ENDPOINT, {
     method: "POST",

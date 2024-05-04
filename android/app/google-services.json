@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "269629582916",
+    "project_id": "shuttlebus-1529d",
+    "storage_bucket": "shuttlebus-1529d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269629582916:android:53847c65a1e478653ed611",
+        "android_client_info": {
+          "package_name": "com.jiseungmin.student"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO8B8aSvfro8knBWPkTVcXRIQ5JQytLpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

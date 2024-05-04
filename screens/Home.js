@@ -46,6 +46,10 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.textStyle}>SMUBUS</Text>
 
+      <TouchableOpacity onPress={() => registerForPushNotifications()}>
+        <Text style={styles.item}>토큰생성</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => goToScreen("Cheonan_Terminal")}>
         <Text style={styles.item}>천안터미널</Text>
       </TouchableOpacity>
