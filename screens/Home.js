@@ -63,6 +63,13 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.textStyle}>SMUBUS</Text>
 
+      <View style={styles.card}>
+        <Text style={styles.noticeTitle}>공지사항</Text>
+        <Text style={styles.noticeContent}>
+          현재 천안터미널 2:30분 출발 버스가 지연되었습니다.
+        </Text>
+      </View>
+
       <TouchableOpacity onPress={() => internetchecking()}>
         <Text style={styles.item}>{name || '토큰생성'}</Text>
       </TouchableOpacity>
@@ -117,10 +124,34 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: "black",
-    marginBottom: 50,
+    marginBottom: 20,
     fontSize: 36,
     fontWeight: "bold", // 텍스트의 두께를 조절합니다.
   },
+  noticeContainer: {
+    marginBottom: 40,
+    alignItems: "center",
+  },
+  card: {
+    backgroundColor: "#EAEAEA",
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 30,
+    width: '80%',
+    alignItems: "center",
+  },
+  noticeTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#555",
+  },
+  noticeContent: {
+    fontSize: 16,
+    color: "#777",
+    textAlign: "center",
+  },
+ 
 });
 
 export default Home;

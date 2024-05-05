@@ -41,7 +41,11 @@ const Map = ({ route, navigation }) => {
   const Station = route.params.screenName;
   const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
 
-  
+  const fileName = StationFileMap[Station];
+  console.log(fileName);
+
+  // const htmlPath =
+  //   Platform.OS === "android" ? `file:///android_asset/${fileName}` : fileName; // iOS에서는 Xcode 프로젝트에 리소스로 추가된 HTML 파일을 사용
 
 
   /* useEffect */
@@ -108,7 +112,7 @@ const Map = ({ route, navigation }) => {
       <WebView
         ref={webViewRef}
         originWhitelist={["*"]}
-        source={webviewSource}
+        source={{uri:"http://quv.kr/"}}
         style={styles.webView}
       />
 

@@ -20,7 +20,8 @@
         {
           "android": {
             "usesCleartextTraffic": true
-          }
+          },
+          "ios": {}
         }
       ]
     ],
