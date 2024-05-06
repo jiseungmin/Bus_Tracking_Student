@@ -1,6 +1,6 @@
-import { Alert, Image } from "react-native";
+import { Alert, Image, Platform } from "react-native";
 import { fetchBusLocation } from "../API/api";
-import { Platform, WebView } from "react-native-webview";
+import { WebView } from "react-native-webview";
 import { StationFileMap } from "../config/stations";
 import * as Notifications from "expo-notifications";
 import React, { useRef, useState, useEffect } from "react";
@@ -41,12 +41,10 @@ const Map = ({ route, navigation }) => {
   const Station = route.params.screenName;
   const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
 
-  const fileName = StationFileMap[Station];
-  console.log(fileName);
-
-  // const htmlPath =
-  //   Platform.OS === "android" ? `file:///android_asset/${fileName}` : fileName; // iOS에서는 Xcode 프로젝트에 리소스로 추가된 HTML 파일을 사용
-
+  const htmlPath =
+    Platform.OS === "ios"
+      ? { uri: `file:///android_asset/tmap_${Station}.html` }
+      : webviewSource;
 
   /* useEffect */
   useEffect(() => {
@@ -112,7 +110,7 @@ const Map = ({ route, navigation }) => {
       <WebView
         ref={webViewRef}
         originWhitelist={["*"]}
-        source={{uri:"http://quv.kr/"}}
+        source={htmlPath}
         style={styles.webView}
       />
 

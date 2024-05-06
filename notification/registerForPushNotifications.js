@@ -10,13 +10,9 @@ const PUSH_ENDPOINT = "https://bus-tracking-server-mu.vercel.app/api/token";
 
 // 1. Push Notification Token 토큰 생성
 const registerForPushNotificationsAsync = async () => {
-  console.log("Registerin");
   const alreadyGranted = await AsyncStorage.getItem("notificationsGranted");
 
   if (alreadyGranted === "true") {
-    // 이미 권한이 허가되었다면 이후 로직을 실행하지 않음
-    Alert.alert("잠시만 기다려주세요.", "이미 권한 먹음.", [{ text: "확인" }]);
-    console.log("already");
     return;
   }
 
