@@ -144,9 +144,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    width: "100%",
   },
   webView: {
-    height: height * 0.6, // WebView 높이, 필요에 따라 조절 가능
+    width: "100%",
+    alignSelf: "stretch", // 부모의 너비에 맞춤
   },
   button: {
     backgroundColor: "#38B63C",

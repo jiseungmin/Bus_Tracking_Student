@@ -49,8 +49,6 @@ const registerForPushNotificationsAsync = async () => {
   token = await Notifications.getExpoPushTokenAsync({
     projectId: Constants.expoConfig.extra.eas.projectId,
   });
-  console.log("tokne: ", token);
-  Alert.alert("잠시만 기다려주세요.", token + "토큰생성", [{ text: "확인" }]);
 
   return fetch(PUSH_ENDPOINT, {
     method: "POST",

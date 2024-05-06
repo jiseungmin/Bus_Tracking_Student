@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import * as Notifications from "expo-notifications";
 import registerForPushNotifications from "../notification/registerForPushNotifications";
@@ -10,9 +10,19 @@ import {
   BackHandler,
 } from "react-native";
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 const Home = ({ navigation }) => {
   const [notification, setNotification] = useState(false);
-  const [name, setName] = useState("");
+  const [Title, setTitle] = useState("");
+  const notificationListener = useRef();
+  const [Content, setContent] = useState("");
 
   // 각 항목을 클릭했을 때 호출될 함수들
   const goToScreen = (screenName) => {
@@ -22,17 +32,16 @@ const Home = ({ navigation }) => {
   const internetchecking = async () => {
     try {
       const response = await fetch(
-        "https://6635b167415f4e1a5e252583.mockapi.io/test/name"
+        "https://bus-tracking-server-mu.vercel.app/api/notice"
       );
+
       const data = await response.json();
-      const names = data.map((item) => item.name);
-      setName(names[0]); // 첫 번째 이름 값을 저장
-      return names;
+      setTitle(data.title);
+      setContent(data.content);
     } catch (error) {
-      setName("error"); // 첫 번째 이름 값을 저장
       console.error("Error fetching data:", error);
 
-      return []; // 오류 발생 시 빈 배열 반환
+      return [];
     }
   };
 
@@ -65,8 +74,8 @@ const Home = ({ navigation }) => {
       <Text style={styles.textStyle}>SMUBUS</Text>
 
       <View style={styles.card}>
-        <Text style={styles.noticeTitle}>공지사항</Text>
-        <Text style={styles.noticeContent}>{name}</Text>
+        <Text style={styles.noticeTitle}>{Title}</Text>
+        <Text style={styles.noticeContent}>{Content}</Text>
       </View>
 
       <TouchableOpacity onPress={() => registerForPushNotifications()}>
