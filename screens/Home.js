@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   contentContainer: {
-    flex: 2,
+    flex: 1.5,
     width: '100%',
     backgroundColor: "#f4f4f4",
     flexDirection: "row",
@@ -168,8 +168,13 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: "#fff",
-    fontSize: 24, // 텍스트 크기 조정
+    fontSize: 28, // 텍스트 크기 조정
     fontWeight: "bold",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 5,
   },
   card: {
     backgroundColor: "#fff",
@@ -177,6 +182,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop:20,
     width: "90%", // 카드의 너비를 늘려 콘텐츠가 더 잘 보이게 함
+    height:"60%",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },

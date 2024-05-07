@@ -145,9 +145,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", // 밝은 회색 톤의 배경색
   },
   webView: {
-    width: '100%', // 화면 너비에 맞게 조정
-    height: '100%', // 전체 높이의 60%를 차지
-    marginTop: width * 0.08
+    width: width, // 화면 너비에 맞게 조정
+    height: height, // 전체 높이의 60%를 차지
   },
   button: {
     backgroundColor: "#244092", // iOS 스타일의 기본 파란색
@@ -181,7 +180,7 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: "absolute",
-    top: Platform.OS === 'ios' ? 44 : 10, // 플랫폼에 따라 상단 여백 조정
+    top: Platform.OS === 'ios' ? 50 : 10, // 플랫폼에 따라 상단 여백 조정
     left: 10,
     zIndex: 10,
   },
