@@ -101,7 +101,7 @@ const Map = ({ route, navigation }) => {
       style={styles.floatingButton}
     >
       <Image
-        source={require("../assets/backgo.png")}
+        source={require("../assets/icon_back2.png")}
         style={styles.backIcon}
       />
     </TouchableOpacity>
@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
   },
   webView: {
     width: '100%', // 화면 너비에 맞게 조정
-    height: '60%', // 전체 높이의 60%를 차지
-    marginTop: 20, // 상단 여백 추가
+    height: '100%', // 전체 높이의 60%를 차지
+    marginTop: width * 0.08
   },
   button: {
     backgroundColor: "#244092", // iOS 스타일의 기본 파란색
