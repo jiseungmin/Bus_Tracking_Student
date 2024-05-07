@@ -17,9 +17,9 @@ const { width, height } = Dimensions.get("window");
 /* TODO 운전자 앱에서 버스 정보및 시간표 데이터 받기 */
 const busInfo = {
   busNumber: "11",
-  route: "노선명 천안터미널",
-  number: "차량 번호 77사 7973",
-  time: "운행 시간 9:30~10:00~10:30",
+  route: "천안터미널",
+  number: "77사 7973",
+  time: "9:30~10:00~10:30",
 };
 
 /* 알림 처리 */
@@ -42,7 +42,7 @@ const Map = ({ route, navigation }) => {
   const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
 
   const htmlPath =
-    Platform.OS === "ios"
+    Platform.OS === "android"
       ? { uri: `file:///android_asset/tmap_${Station}.html` }
       : webviewSource;
 
@@ -92,47 +92,46 @@ const Map = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* 웹뷰 위에 플로팅 뒤로 가기 버튼 */}
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("Home");
-        }}
-        style={styles.floatingButton}
-      >
-        <Image
-          source={require("../assets/backgo.png")}
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
-
-      {/* 지도를 표시하는 WebView 컴포넌트 */}
-      <WebView
-        ref={webViewRef}
-        originWhitelist={["*"]}
-        source={htmlPath}
-        style={styles.webView}
+  <View style={styles.container}>
+    {/* 웹뷰 위에 플로팅 뒤로 가기 버튼 */}
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("Home");
+      }}
+      style={styles.floatingButton}
+    >
+      <Image
+        source={require("../assets/icon_back2.png")}
+        style={styles.backIcon}
       />
+    </TouchableOpacity>
 
-      {/* 추적 토글 버튼 */}
-      <TouchableOpacity onPress={fetchLocation} style={styles.button}>
-        <Text style={styles.buttonText}>{buttonTitle}</Text>
-      </TouchableOpacity>
+    {/* 지도를 표시하는 WebView 컴포넌트 */}
+    <WebView
+      ref={webViewRef}
+      originWhitelist={["*"]}
+      source={htmlPath}
+      style={styles.webView}
+    />
+
+    {/* 추적 토글 버튼 */}
+    <TouchableOpacity onPress={fetchLocation} style={styles.button}>
+      <Text style={styles.buttonText}>{buttonTitle}</Text>
+    </TouchableOpacity>
 
       {/* 사용자 지정 뷰 */}
       <View style={styles.infoContainer}>
-        <View>
-          <Image source={require("../assets/bus.png")} style={styles.busIcon} />
+        <View style={styles.imgContainer}>
+          <Image source={require("../assets/icon_bus.png")} style={styles.busIcon} />
           <Text
-            style={styles.busOrder}
+            style={styles.smallText}
           >{`차량 순서 ${busInfo.busNumber}`}</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.routeText}>{busInfo.route}</Text>
-          <Text style={styles.timeText}>{busInfo.time}</Text>
+          <Text style={styles.boldText}>노선명 {busInfo.route}</Text>
+          <Text style={styles.mediumText}>운행 시간 : {busInfo.time}</Text>
           <View style={styles.numberContainer}>
-            <Text style={styles.numberText}>{busInfo.number}</Text>
-            <Text style={styles.busNumber}>{busInfo.busNumber}</Text>
+            <Text style={styles.mediumText}>차량 번호 : {busInfo.number}</Text>
           </View>
         </View>
       </View>
@@ -143,73 +142,78 @@ const Map = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    width: "100%",
+    backgroundColor: "#fff", // 밝은 회색 톤의 배경색
   },
   webView: {
-    width: "100%",
-    alignSelf: "stretch", // 부모의 너비에 맞춤
+    width: width, // 화면 너비에 맞게 조정
+    height: height, // 전체 높이의 60%를 차지
   },
   button: {
-    backgroundColor: "#38B63C",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#244092", // iOS 스타일의 기본 파란색
+    padding: 12,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    margin: 10,
+    marginHorizontal: 20, // 좌우 마진 추가
+    marginTop: 10,
   },
   buttonText: {
     fontSize: 16,
-    color: "white",
+    color: "#FFFFFF", // 텍스트 색상을 흰색으로
     fontWeight: "bold",
   },
   infoContainer: {
-    backgroundColor: "white",
     flexDirection: "row",
-    alignItems: "center",
-  },
-  busOrder: {
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 5,
-  },
-  busIcon: {
-    width: 100,
-    height: 50,
-    resizeMode: "contain",
+    alignItems: "flex-start",
+    paddingHorizontal: 30, // 좌우 패딩 추가
+    paddingVertical: 30, // 상하 패딩 추가
+    backgroundColor: "#FFFFFF", // 백그라운드를 흰색으로 설정
+    shadowColor: "#000", // 그림자 색상
+    shadowOffset: { width: 0, height: 1 }, // 그림자 위치
+    shadowOpacity: 0.2, // 그림자 투명도
+    shadowRadius: 1.41, // 그림자 반경
+    elevation: 2, // 안드로이드용 그림자
   },
   textContainer: {
-    marginLeft: 10,
-  },
-  routeText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  timeText: {
-    fontSize: 16,
-  },
-  numberContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%", // 차량 번호와 버스 번호를 화면 너비에 맞춰 분산시킵니다.
-  },
-  numberText: {
-    fontSize: 16,
-  },
-  busNumber: {
-    fontSize: 24,
-    fontWeight: "bold",
+    flex: 1, // 남은 공간 모두 차지
+    marginLeft:30,
   },
   floatingButton: {
-    position: "absolute", // 뷰 상에서 절대적인 위치
-    top: 44, // 안전한 상단 여백으로 설정 (상태바 등을 고려)
-    left: 10, // 화면 왼쪽에서의 위치
-    zIndex: 10, // 다른 요소들 위에 렌더링되도록 zIndex 설정
+    position: "absolute",
+    top: Platform.OS === 'ios' ? 50 : 10, // 플랫폼에 따라 상단 여백 조정
+    left: 10,
+    zIndex: 10,
   },
   backIcon: {
-    width: 30, // 아이콘의 너비
-    height: 30, // 아이콘의 높이
+    width: 40, // 아이콘 크기 조정
+    height: 40,
+  },
+  imgContainer:{
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  busIcon:{
+    width: 55, // 아이콘 크기 조정
+    height: 55,
+    marginBottom:10
+  },
+  boldText:{
+    fontSize:24,
+    fontWeight:"bold",
+    color:"#444",
+    marginBottom:5
+  },
+  mediumText:{
+    fontSize:20,
+    color:"#444"
+  },
+  smallText:{
+    fontSize:16,
+    fontWeight:"bold",
+    color:"#444",
   },
 });
+
+
 
 export default Map;
