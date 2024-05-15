@@ -10,7 +10,7 @@ import {
   BackHandler,
   Dimensions,
   SafeAreaView,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 
 Notifications.setNotificationHandler({
@@ -20,8 +20,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-const { width, height } = Dimensions.get('window'); // Get the screen width
-
+const { width, height } = Dimensions.get("window"); // Get the screen width
 
 const Home = ({ navigation }) => {
   const [notification, setNotification] = useState(false);
@@ -32,6 +31,9 @@ const Home = ({ navigation }) => {
   // 각 항목을 클릭했을 때 호출될 함수들
   const goToScreen = (screenName) => {
     navigation.navigate("Map", { screenName });
+  };
+  const goToTimeTable = (screenName) => {
+    navigation.navigate("TimeTable", { screenName });
   };
 
   const internetchecking = async () => {
@@ -86,49 +88,57 @@ const Home = ({ navigation }) => {
           <Text style={styles.noticeContent}>{Content}</Text>
         </View>
       </View>
-      
+
       <ImageBackground
-        source={require('../assets/roadf.png')}
+        source={require("../assets/roadf.png")}
         resizeMode="contain"
-        style={styles.contentContainer}>
-        <TouchableOpacity 
+        style={styles.contentContainer}
+      >
+        <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Terminal")}>
+          onPress={() => goToScreen("Cheonan_Terminal")}
+        >
           <Text style={styles.item}>천안{"\n"}터미널</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Station")}>
+          onPress={() => goToScreen("Cheonan_Station")}
+        >
           <Text style={styles.item}>천안역</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Asan_Station")}>
+          onPress={() => goToScreen("Cheonan_Asan_Station")}
+        >
           <Text style={styles.item}>천안{"\n"}아산역</Text>
         </TouchableOpacity>
       </ImageBackground>
       <ImageBackground
-        source={require('../assets/roadf.png')}
-        resizeMode="contain" 
-        style={styles.contentContainer}>
-        <TouchableOpacity 
+        source={require("../assets/roadf.png")}
+        resizeMode="contain"
+        style={styles.contentContainer}
+      >
+        <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Onyang_Oncheon_Station")}>
+          onPress={() => goToScreen("Onyang_Oncheon_Station")}
+        >
           <Text style={styles.item}> 온양온천역{"\n"}(아산터미널)</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Campus")}>
+          onPress={() => goToScreen("Cheonan_Campus")}
+        >
           <Text style={styles.item}>천안{"\n"}캠퍼스</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Screen2")}>
-          <Text style={styles.item}> 시간표{"\n"}바로가기</Text>
+          onPress={() => goToTimeTable("TimeTable")}
+        >
+          <Text style={styles.item}>시간표{"\n"}바로가기</Text>
         </TouchableOpacity>
       </ImageBackground>
     </SafeAreaView>
@@ -144,19 +154,19 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   header: {
-    flex:1,
+    flex: 1,
     backgroundColor: "#244092",
-    width: '100%', 
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     padding: 15,
   },
   contentContainer: {
     flex: 1.5,
-    width: '100%',
+    width: "100%",
     backgroundColor: "#f4f4f4",
     flexDirection: "row",
-    justifyContent: 'space-around', // 요소간 간격을 space-around로 변경하여 균등 배분
-    alignItems: 'center', // 모든 자식 요소를 세로 방향 가운데로 정렬
+    justifyContent: "space-around", // 요소간 간격을 space-around로 변경하여 균등 배분
+    alignItems: "center", // 모든 자식 요소를 세로 방향 가운데로 정렬
     //padding: 15, // 패딩 조정
   },
   btncontainer: {
@@ -175,7 +185,7 @@ const styles = StyleSheet.create({
   item: {
     fontSize: 18, // 폰트 크기 조정
     fontWeight: "500", // 폰트 두께 조정
-    textAlign: "center"
+    textAlign: "center",
   },
   textStyle: {
     color: "#fff",
@@ -191,9 +201,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 20,
-    marginTop:20,
+    marginTop: 20,
     width: "90%", // 카드의 너비를 늘려 콘텐츠가 더 잘 보이게 함
-    height:"60%",
+    height: "60%",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -213,6 +223,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
 
 export default Home;

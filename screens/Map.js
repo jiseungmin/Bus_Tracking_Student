@@ -42,7 +42,7 @@ const Map = ({ route, navigation }) => {
   const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
 
   const htmlPath =
-    Platform.OS === "android"
+    Platform.OS === "ios"
       ? { uri: `file:///android_asset/tmap_${Station}.html` }
       : webviewSource;
 
@@ -92,37 +92,40 @@ const Map = ({ route, navigation }) => {
   };
 
   return (
-  <View style={styles.container}>
-    {/* 웹뷰 위에 플로팅 뒤로 가기 버튼 */}
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate("Home");
-      }}
-      style={styles.floatingButton}
-    >
-      <Image
-        source={require("../assets/icon_back2.png")}
-        style={styles.backIcon}
+    <View style={styles.container}>
+      {/* 웹뷰 위에 플로팅 뒤로 가기 버튼 */}
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("Home");
+        }}
+        style={styles.floatingButton}
+      >
+        <Image
+          source={require("../assets/icon_back2.png")}
+          style={styles.backIcon}
+        />
+      </TouchableOpacity>
+
+      {/* 지도를 표시하는 WebView 컴포넌트 */}
+      <WebView
+        ref={webViewRef}
+        originWhitelist={["*"]}
+        source={htmlPath}
+        style={styles.webView}
       />
-    </TouchableOpacity>
 
-    {/* 지도를 표시하는 WebView 컴포넌트 */}
-    <WebView
-      ref={webViewRef}
-      originWhitelist={["*"]}
-      source={htmlPath}
-      style={styles.webView}
-    />
-
-    {/* 추적 토글 버튼 */}
-    <TouchableOpacity onPress={fetchLocation} style={styles.button}>
-      <Text style={styles.buttonText}>{buttonTitle}</Text>
-    </TouchableOpacity>
+      {/* 추적 토글 버튼 */}
+      <TouchableOpacity onPress={fetchLocation} style={styles.button}>
+        <Text style={styles.buttonText}>{buttonTitle}</Text>
+      </TouchableOpacity>
 
       {/* 사용자 지정 뷰 */}
       <View style={styles.infoContainer}>
         <View style={styles.imgContainer}>
-          <Image source={require("../assets/icon_bus.png")} style={styles.busIcon} />
+          <Image
+            source={require("../assets/icon_bus.png")}
+            style={styles.busIcon}
+          />
           <Text
             style={styles.smallText}
           >{`차량 순서 ${busInfo.busNumber}`}</Text>
@@ -176,11 +179,11 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1, // 남은 공간 모두 차지
-    marginLeft:30,
+    marginLeft: 30,
   },
   floatingButton: {
     position: "absolute",
-    top: Platform.OS === 'ios' ? 50 : 10, // 플랫폼에 따라 상단 여백 조정
+    top: Platform.OS === "ios" ? 50 : 10, // 플랫폼에 따라 상단 여백 조정
     left: 10,
     zIndex: 10,
   },
@@ -188,32 +191,30 @@ const styles = StyleSheet.create({
     width: 40, // 아이콘 크기 조정
     height: 40,
   },
-  imgContainer:{
+  imgContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
-  busIcon:{
+  busIcon: {
     width: 55, // 아이콘 크기 조정
     height: 55,
-    marginBottom:10
+    marginBottom: 10,
   },
-  boldText:{
-    fontSize:24,
-    fontWeight:"bold",
-    color:"#444",
-    marginBottom:5
+  boldText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#444",
+    marginBottom: 5,
   },
-  mediumText:{
-    fontSize:20,
-    color:"#444"
+  mediumText: {
+    fontSize: 20,
+    color: "#444",
   },
-  smallText:{
-    fontSize:16,
-    fontWeight:"bold",
-    color:"#444",
+  smallText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#444",
   },
 });
-
-
 
 export default Map;
