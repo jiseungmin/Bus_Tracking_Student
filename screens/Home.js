@@ -37,7 +37,10 @@ const Home = ({ navigation }) => {
   const internetchecking = async () => {
     try {
       const response = await fetch(
-        "https://bus-tracking-server-mu.vercel.app/api/notice"
+        "https://bus-tracking-server-mu.vercel.app/api/notice",
+        {
+          method: "GET",
+        }
       );
 
       const data = await response.json();
