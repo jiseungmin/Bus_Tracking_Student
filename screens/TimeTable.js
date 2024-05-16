@@ -7,6 +7,7 @@ import {
   Button,
   ScrollView,
 } from "react-native";
+import WebView from "react-native-web-webview";
 
 const TimeTable = ({ navigation }) => {
   const [data, setData] = useState([]);
@@ -30,6 +31,16 @@ const TimeTable = ({ navigation }) => {
     }
   };
 
+  //const StationTable = async () => {
+  // try {
+  //   if(station === "CheonanTerminalStation"){
+
+  // }else if {
+
+  // }
+  //} catch (error) {}
+  //};
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -47,19 +58,44 @@ const TimeTable = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.touchButton}>
+        <TouchableOpacity
+          style={styles.touchButton}
+          onPress={() => {
+            setData("CheonanStation");
+          }}
+        >
           <Text style={styles.buttonText}>천안역</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.touchButton}>
+        <TouchableOpacity
+          style={styles.touchButton}
+          onPress={() => {
+            setData("CheonanAsanStation");
+          }}
+        >
           <Text style={styles.buttonText}>아산(KTX)역</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.touchButton}>
+        <TouchableOpacity
+          style={styles.touchButton}
+          onPress={() => {
+            setData("CheonanTerminalStation");
+          }}
+        >
           <Text style={styles.buttonText}>천안터미널</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.touchButton}>
+        <TouchableOpacity
+          style={styles.touchButton}
+          onPress={() => {
+            setData("OnyangOncheonStation");
+          }}
+        >
           <Text style={styles.buttonText}>온양역/터미널</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.touchButton}>
+        <TouchableOpacity
+          style={styles.touchButton}
+          onPress={() => {
+            setData("CheonanCampus");
+          }}
+        >
           <Text style={styles.buttonText}>천안캠퍼스</Text>
         </TouchableOpacity>
       </View>
@@ -68,26 +104,20 @@ const TimeTable = ({ navigation }) => {
       <ScrollView style={styles.scrollView}>
         {data.map((item, index) => (
           <View key={`${item._id}-${index}`} style={styles.itemContainer}>
-            <Text style={styles.itemText}>Schedule ID: {item.scheduleId}</Text>
-            <Text style={styles.itemText}>Status: {item.status}</Text>
+            <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
             <Text style={styles.itemText}>
-              Asan Campus Arrival: {item.AsanCampusArrival}
+              아산 캠퍼스 출발: {item.AsanCampusDeparture}
+            </Text>
+
+            <Text style={styles.itemText}>
+              천안 터미널 도착: {item.TerminalArrival}
             </Text>
             <Text style={styles.itemText}>
-              Asan Campus Departure: {item.AsanCampusDeparture}
+              아산 캠퍼스 도착: {item.AsanCampusArrival}
             </Text>
+
             <Text style={styles.itemText}>
-              Doojeong McDonalds Departure: {item.DoojeongMcDonaldsDeparture}
-            </Text>
-            <Text style={styles.itemText}>
-              Home Mart EveryDay Departure: {item.HomeMartEveryDayDeparture}
-            </Text>
-            <Text style={styles.itemText}>
-              Seoul National University Hospital Departure:{" "}
-              {item.SeoulNationalUniversityHospitalDeparture}
-            </Text>
-            <Text style={styles.itemText}>
-              Terminal Arrival: {item.TerminalArrival}
+              금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}
             </Text>
           </View>
         ))}
