@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#444",
-  },
+  }
 });
 
 export default Map;

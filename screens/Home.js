@@ -11,6 +11,7 @@ import {
   Dimensions,
   SafeAreaView,
   ImageBackground,
+  ActivityIndicator
 } from "react-native";
 
 Notifications.setNotificationHandler({
@@ -27,6 +28,7 @@ const Home = ({ navigation }) => {
   const [Title, setTitle] = useState("");
   const notificationListener = useRef();
   const [Content, setContent] = useState("");
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   // 각 항목을 클릭했을 때 호출될 함수들
   const goToScreen = (screenName) => {
@@ -48,6 +50,7 @@ const Home = ({ navigation }) => {
       const data = await response.json();
       setTitle(data.title);
       setContent(data.content);
+      setLoading(false); // 데이터 로드 완료 후 로딩 상태 false로 설정
     } catch (error) {
       console.error("Error fetching data:", error);
 
@@ -84,8 +87,16 @@ const Home = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.textStyle}>SMUBUS</Text>
         <View style={styles.card}>
-          <Text style={styles.noticeTitle}>{Title}</Text>
-          <Text style={styles.noticeContent}>{Content}</Text>
+          {loading ? ( // 로딩 상태에 따라 스피너 또는 공지사항 표시
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color="#244092" />
+            </View>
+          ) : (
+            <>
+              <Text style={styles.noticeTitle}>{Title}</Text>
+              <Text style={styles.noticeContent}>{Content}</Text>
+            </>
+          )}
         </View>
       </View>
 
@@ -181,6 +192,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   item: {
     fontSize: 18, // 폰트 크기 조정
