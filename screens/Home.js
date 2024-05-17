@@ -107,21 +107,21 @@ const Home = ({ navigation }) => {
       >
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Terminal")}
+          onPress={() => goToScreen("CheonanTerminalStation")}
         >
           <Text style={styles.item}>천안{"\n"}터미널</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Station")}
+          onPress={() => goToScreen("CheonanStation")}
         >
           <Text style={styles.item}>천안역</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Asan_Station")}
+          onPress={() => goToScreen("CheonanAsanStation")}
         >
           <Text style={styles.item}>천안{"\n"}아산역</Text>
         </TouchableOpacity>
@@ -133,14 +133,14 @@ const Home = ({ navigation }) => {
       >
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Onyang_Oncheon_Station")}
+          onPress={() => goToScreen("OnyangOncheonStation")}
         >
           <Text style={styles.item}> 온양온천역{"\n"}(아산터미널)</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.btncontainer}
-          onPress={() => goToScreen("Cheonan_Campus")}
+          onPress={() => goToScreen("CheonanCampus")}
         >
           <Text style={styles.item}>천안{"\n"}캠퍼스</Text>
         </TouchableOpacity>

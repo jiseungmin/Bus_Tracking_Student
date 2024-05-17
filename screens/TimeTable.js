@@ -348,10 +348,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#A4A4A4",
   },
   title: {
-    flex: 1,
-    textAlign: 'center', // 텍스트 가운데 정렬
     fontSize: 24,
     fontWeight: "bold",
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonRow: {
     flexDirection: "row",
