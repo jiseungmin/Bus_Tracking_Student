@@ -1,17 +1,13 @@
-import { Alert, Image, Platform, Modal } from "react-native";
 import { fetchBusLocation } from "../API/api";
+import Timetable from "../TimeTable/TimeTable";
 import { WebView } from "react-native-webview";
 import { StationFileMap } from "../config/stations";
 import * as Notifications from "expo-notifications";
 import React, { useRef, useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { Alert, Image, Platform, Modal } from "react-native";
+import { fetchTimetableData } from '../TimeTable/fetchTimetableData';
+import {StyleSheet, Text, View, TouchableOpacity, ScrollView} from "react-native";
+
 
 /* TODO 운전자 앱에서 버스 정보및 시간표 데이터 받기 */
 const busInfo = {
@@ -32,26 +28,24 @@ Notifications.setNotificationHandler({
 
 const Map = ({ route, navigation }) => {
   const webViewRef = useRef(null);
-  const notificationListener = useRef();
-  const [notification, setNotification] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [buttonTitle, setButtonTitle] = useState("현재 버스 위치 확인");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedSchedule, setSelectedSchedule] = useState("학기");
-  const [selectedDay, setSelectedDay] = useState("평일");
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const notificationListener = useRef();
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedDay, setSelectedDay] = useState("평일");
+  const [notification, setNotification] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState("학기");
+  const [buttonTitle, setButtonTitle] = useState("현재 버스 위치 확인");
 
   const Station = route.params.screenName;
-  console.log(Station);
-  console.log(`./assets/tmap_${Station}.html`);
   const webviewSource = Platform.OS === "web" ? `./assets/tmap_${Station}.html` : StationFileMap[Station].uri;
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
     if (!modalVisible) {
-      fetchTimetableData(); // Fetch data when the modal is opened
+      fetchData(); // Fetch data when the modal is opened
     }
   };
 
@@ -61,12 +55,33 @@ const Map = ({ route, navigation }) => {
       setNotification(notification);
     });
 
-    fetchTimetableData();
+    fetchData();
   }, []);
 
   useEffect(() => {
-    fetchTimetableData();
+    fetchData();
   }, [selectedSchedule, selectedDay]);
+
+
+  const handleScheduleSelect = (schedule) => {
+    setSelectedSchedule(schedule);
+  };
+
+  const handleDaySelect = (day) => {
+    setSelectedDay(day);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    setData([]);
+
+    const { data, error } = await fetchTimetableData(selectedSchedule, selectedDay, Station);
+    setData(data);
+    setError(error);
+    setLoading(false);
+  };
+
 
   const fetchLocation = async () => {
     if (isButtonDisabled) {
@@ -112,191 +127,6 @@ const Map = ({ route, navigation }) => {
     }
   };
 
-  const handleScheduleSelect = (schedule) => {
-    setSelectedSchedule(schedule);
-  };
-
-  const handleDaySelect = (day) => {
-    setSelectedDay(day);
-  };
-
-  const fetchTimetableData = async () => {
-    setLoading(true);
-    setError(null);
-    setData([]);
-
-    let base_url = "https://bus-tracking-server-mu.vercel.app/api";
-    let semester_path = selectedSchedule === "학기" ? "semester" : "vacation";
-    let day_path = "";
-
-    switch (selectedDay) {
-      case "평일":
-        day_path = "A_weekdays";
-        break;
-      case "토요일/공휴일":
-        day_path = "A_holidays";
-        break;
-      case "일요일":
-        day_path = "A_sundays";
-        break;
-      default:
-        break;
-    }
-
-    const url = `${base_url}/${semester_path}/${day_path}?key=${Station}`;
-    console.log(`Fetching data from URL: ${url}`);
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const response_json = await response.json();
-      const fetchedData = response_json.schedules[Station];
-      console.log(fetchedData);
-
-      setData(fetchedData);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderTimetable = () => {
-    if (loading) {
-      return <ActivityIndicator size="large" color="#244092" />;
-    }
-
-    if (error) {
-      return <Text style={styles.errorText}>Error: {error}</Text>;
-    }
-
-    if (data.length === 0) {
-      return <Text style={styles.noDataText}>No data available</Text>;
-    }
-
-    return data.map((item) => {
-      switch (Station) {
-        case "CheonanStation":
-          return (
-            <View key={item._id} style={styles.itemContainer}>
-              <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-              <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-              <Text style={styles.itemText}>천안역 도착: {item.StationArrival}</Text>
-              <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-              <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-            </View>
-          );
-        case "CheonanAsanStation":
-          if (selectedSchedule === "방학") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>천안아산역 도착: {item.CheonanAsanStationArrival}</Text>
-                <Text style={styles.itemText}>천안역 도착: {item.CheonanStation}</Text>
-                <Text style={styles.itemText}>천안아산역 도착: {item.CheonanAsanStationDeparture}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          } else if (selectedDay === "토요일/공휴일" || selectedDay === "일요일") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>천안아산역 도착: {item.CheonanAsanStation_trans1}</Text>
-                <Text style={styles.itemText}>천안역 도착: {item.CheonanStation}</Text>
-                <Text style={styles.itemText}>천안아산역 도착: {item.CheonanAsanStation_trans2}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          } else {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>아산(KTX)역 도착: {item.CheonanTerminalStation}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          }
-        case "CheonanTerminalStation":
-          if (selectedSchedule === "방학") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>천안 터미널 도착: {item.Terminal}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          } else if (selectedDay === "토요일/공휴일" || selectedDay === "일요일") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>천안 터미널 도착: {item.TerminalArrival}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          } else {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>천안 터미널 도착: {item.TerminalArrival}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          }
-        case "OnyangOncheonStation":
-          if (selectedSchedule === "방학" && selectedDay === "평일") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>온양 온천역 도착: {item.OnyangOncheonStation}</Text>
-                <Text style={styles.itemText}>아산 터미널 도착: {item.AsanTerminal}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          } else if (selectedDay === "평일") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>온양 온천역 도착: {item.OnyangOncheonStationStop}</Text>
-                <Text style={styles.itemText}>아산 터미널 도착: {item.TerminalArrival}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          }
-        case "CheonanCampus":
-          if (selectedDay === "평일") {
-            return (
-              <View key={item._id} style={styles.itemContainer}>
-                <Text style={styles.itemText}>순서: {item.scheduleId}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 출발: {item.AsanCampusDeparture}</Text>
-                <Text style={styles.itemText}>천안 캠퍼스 도착: {item.CheonanCampusStop}</Text>
-                <Text style={styles.itemText}>아산 캠퍼스 도착: {item.AsanCampusArrival}</Text>
-                <Text style={styles.itemText}>금요일 운행 여부: {item.isFridayDriving ? "운행" : "운행 X"}</Text>
-              </View>
-            );
-          }
-        default:
-          return null;
-      }
-    });
-  };
 
   return (
     <View style={styles.container}>
@@ -383,7 +213,17 @@ const Map = ({ route, navigation }) => {
                 </TouchableOpacity>
               )}
             </View>
-            <ScrollView style={styles.scrollView}>{renderTimetable()}</ScrollView>
+            <ScrollView style={styles.scrollView}>
+              <Timetable
+                loading={loading}
+                error={error}
+                data={data}
+                Station={Station}
+                selectedSchedule={selectedSchedule}
+                selectedDay={selectedDay}
+                styles={styles}
+              />
+            </ScrollView>
             <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>닫기</Text>
             </TouchableOpacity>
