@@ -8,11 +8,8 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  Dimensions,
+  TouchableOpacity
 } from "react-native";
-
-const { width, height } = Dimensions.get("window");
 
 /* TODO 운전자 앱에서 버스 정보및 시간표 데이터 받기 */
 const busInfo = {
@@ -66,16 +63,31 @@ const Map = ({ route, navigation }) => {
       const User_latitude = 36.7988;
       const User_longitude = 127.077;
 
-      // WebView로 위치 정보 전송
-      if (webViewRef.current) {
-        webViewRef.current.postMessage(
+      if (Platform.OS === "web") {
+        // Web에서는 window.postMessage를 사용합니다.
+      console.log("IN WEB window")
+      console.log(User_latitude)
+        window.frames[0].postMessage(
           JSON.stringify({
-            latitude: latitude,
-            longitude: longitude,
-            User_latitude: User_latitude,
-            User_longitude: User_longitude,
-          })
+            latitude,
+            longitude,
+            User_latitude,
+            User_longitude,
+          }),
+          "*"
         );
+      } else {
+        // WebView로 위치 정보 전송
+        if (webViewRef.current) {
+          webViewRef.current.postMessage(
+            JSON.stringify({
+              latitude,
+              longitude,
+              User_latitude,
+              User_longitude,
+            })
+          );
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -152,8 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", // 밝은 회색 톤의 배경색
   },
   webView: {
-    width: width,
-    height: height/1.5,
+    flex: 1, // 화면 높이의 일정 부분을 차지하도록 설정
   },
   button: {
     backgroundColor: "#244092", // iOS 스타일의 기본 파란색
