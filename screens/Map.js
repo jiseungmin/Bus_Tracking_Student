@@ -39,12 +39,7 @@ const Map = ({ route, navigation }) => {
   const [buttonTitle, setButtonTitle] = useState("현재 버스 위치 확인");
 
   const Station = route.params.screenName;
-  const webviewSource = Image.resolveAssetSource(StationFileMap[Station]);
-
-  const htmlPath =
-    Platform.OS === "ios"
-      ? { uri: `file:///android_asset/tmap_${Station}.html` }
-      : webviewSource;
+  const webviewSource = Platform.OS === "web" ? `./assets/tmap_${Station}.html` : StationFileMap[Station].uri;
 
   /* useEffect */
   useEffect(() => {
@@ -107,12 +102,21 @@ const Map = ({ route, navigation }) => {
       </TouchableOpacity>
 
       {/* 지도를 표시하는 WebView 컴포넌트 */}
-      <WebView
-        ref={webViewRef}
-        originWhitelist={["*"]}
-        source={htmlPath}
-        style={styles.webView}
-      />
+      {Platform.OS === "web" ? (
+        <iframe
+          ref={webViewRef}
+          src={webviewSource}
+          style={styles.webView}
+          title="Map"
+        />
+      ) : (
+        <WebView
+          ref={webViewRef}
+          originWhitelist={["*"]}
+          source={{ uri: webviewSource }}
+          style={styles.webView}
+        />
+      )}
 
       {/* 추적 토글 버튼 */}
       <TouchableOpacity onPress={fetchLocation} style={styles.button}>
@@ -148,8 +152,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", // 밝은 회색 톤의 배경색
   },
   webView: {
-    width: width, // 화면 너비에 맞게 조정
-    height: height, // 전체 높이의 60%를 차지
+    width: width,
+    height: height/1.5,
   },
   button: {
     backgroundColor: "#244092", // iOS 스타일의 기본 파란색

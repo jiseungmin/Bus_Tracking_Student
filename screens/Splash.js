@@ -30,11 +30,11 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontSize: 36,
-    fontWeight: "bold", // 텍스트의 두께를 조절합니다.
+    fontWeight: "bold", 
   },
   imageStyle: {
-    width: windowWidth, // 너비에 대해 유동적인 크기 조정
-    height: windowHeight, // 높이에 대해 유동적인 크기 조정
+    width: windowWidth, 
+    height: windowHeight, 
     resizeMode: "cover",
   },
 });
