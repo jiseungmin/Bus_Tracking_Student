@@ -21,6 +21,9 @@
   <script type="text/javascript">
     var map;
     var currentMarker = null;
+    var currentInfoWindow = null;
+    var markers = [];
+    var userMarker = null;
 
     function initTmap() {
       map = new Tmapv2.Map("map_div", {
@@ -66,27 +69,77 @@
       });
     }
 
-    function addMarker(latitude, longitude) {
+    function clearMarkers() {
+      markers.forEach(function(marker) {
+        marker.setMap(null); // Remove marker from map
+      });
+      markers = []; // Reset array
+    }
+
+    function addMarker(latitude, longitude, busInfo) {
       var marker = new Tmapv2.Marker({
         position: new Tmapv2.LatLng(latitude, longitude),
-        map: map
+        map: map,
       });
+
+      var infoWindow = new Tmapv2.InfoWindow({
+        position: new Tmapv2.LatLng(latitude, longitude),
+        content: `<div style="width:200px;text-align:center;padding:5px;">
+                    <strong>순서: ${busInfo.busorder}</strong><br/>          
+                    <strong>버스 번호: ${busInfo.busNumber}</strong><br/>
+                    <strong>운행 시간: ${busInfo.BusTime}</strong><br/>
+                  </div>`,
+        type: 2, // Type 2: Text bubble
+        offset: new Tmapv2.Point(100, 100) // Offset on Y-axis
+      });
+
+      marker.addListener("click", function () {
+        if (currentInfoWindow) {
+          currentInfoWindow.setMap(null); // Close current info window
+        }
+        if (currentInfoWindow !== infoWindow) {
+          infoWindow.setMap(map); // Open new info window
+          currentInfoWindow = infoWindow; // Update current info window
+        } else {
+          currentInfoWindow = null; // Reset current info window
+        }
+      });
+
+      markers.push(marker); // Add new marker to array
+      return marker;
     }
 
     function addBusMarkers(buses) {
+      clearMarkers(); // Clear existing markers
       buses.forEach(bus => {
-        addMarker(bus.latitude, bus.longitude);
+        addMarker(bus.latitude, bus.longitude, {
+          busNumber: bus.busNumber,
+          BusTime: bus.BusTime,
+          busorder: bus.busorder
+        });
       });
     }
 
+    function addUserMarker(latitude, longitude) {
+      if (userMarker) {
+        userMarker.setPosition(new Tmapv2.LatLng(latitude, longitude)); // Update existing user marker position
+      } else {
+        userMarker = new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(latitude, longitude),
+          map: map,
+          icon: "./user.png",
+          iconSize: new Tmapv2.Size(24, 38) // Set icon size
+        });
+      }
+    }
 
     window.addEventListener("message", function (event) {
       try {
         var data = JSON.parse(event.data);
         if (data.buses) {
-        map.setCenter(new Tmapv2.LatLng(data.User_latitude, data.User_longitude));
-        addBusMarkers(data.buses);
-      }
+          map.setCenter(new Tmapv2.LatLng(data.User_latitude, data.User_longitude));
+          addBusMarkers(data.buses);
+        }
         var User_latitude = data.User_latitude;
         var User_longitude = data.User_longitude;
 
@@ -95,8 +148,16 @@
           currentMarker = null;
         }
 
+        addUserMarker(User_latitude, User_longitude); // Add or update user marker
+
         var moveLatLng = new Tmapv2.LatLng(User_latitude, User_longitude);
         map.setCenter(moveLatLng);
+
+        // Close info window if open
+        if (currentInfoWindow) {
+          currentInfoWindow.setMap(null);
+          currentInfoWindow = null;
+        }
       } catch (error) {
         window.ReactNativeWebView.postMessage(
           "error: parsing message from React Native"

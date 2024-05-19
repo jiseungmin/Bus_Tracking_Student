@@ -98,7 +98,7 @@ const Map = ({ route, navigation }) => {
     }
     setIsButtonDisabled(true);
     try {
-      const { contentObj } = await fetchBusLocation();
+      const { contentObj } = await fetchBusLocation(Station);
       console.log("contentObj: ", contentObj);
       
       if (contentObj.length > 0) {
