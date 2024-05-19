@@ -32,7 +32,6 @@ const Map = ({ route, navigation }) => {
 
   const [busInfo, setBusInfo] = useState({
     allBuses: [],
-    route: "",
     busorder: "",
     station: "",
     bustime: "",
@@ -65,6 +64,7 @@ const Map = ({ route, navigation }) => {
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
+    fetchLocation();
     fetchData();
   }, []);
 
@@ -105,7 +105,6 @@ const Map = ({ route, navigation }) => {
         const firstBus = contentObj[0];
         setBusInfo({
           allBuses: contentObj,
-          route: firstBus.route || "",  // Assuming 'route' is a field in your bus object
           busorder: contentObj.map(bus => bus.busorder).join(", "),
           station: firstBus.station,
           bustime: firstBus.BusTime,
@@ -128,6 +127,14 @@ const Map = ({ route, navigation }) => {
             );
           }
         }
+      }else {
+        setBusInfo({
+          allBuses: [],
+          busorder: "",
+          station: "",
+          bustime: "",
+          busnumber: ""
+        });
       }
     } catch (error) {
       console.error("Error:", error);
@@ -160,17 +167,23 @@ const Map = ({ route, navigation }) => {
           <Text style={styles.boldText}>{StationNameMap[Station]}</Text>
         </View>
         <View style={styles.textContainer}>
-          <View style={styles.row}>
-            <Text style={styles.mediumText}>{`현재 운행중인 차량 순서: ${busInfo.busorder}`}</Text>
-            <TouchableOpacity onPress={toggleInfoModal} style={styles.inlineButton}>
-              <Text style={styles.inlineButtonText}>상세 정보</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.numberContainer}>
-            <Text style={styles.mediumText}>운행 시간: {busInfo.bustime}</Text>
-            <Text style={styles.mediumText}>차량 번호: {busInfo.busnumber}</Text>
-          </View>
+    {busInfo.allBuses.length > 0 ? (
+      <>
+        <View style={styles.row}>
+          <Text style={styles.mediumText}>{`현재 운행중인 차량 순서: ${busInfo.busorder}`}</Text>
+          <TouchableOpacity onPress={toggleInfoModal} style={styles.inlineButton}>
+            <Text style={styles.inlineButtonText}>상세 정보</Text>
+          </TouchableOpacity>
         </View>
+        <View style={styles.numberContainer}>
+          <Text style={styles.mediumText}>운행 시간: {busInfo.bustime}</Text>
+          <Text style={styles.mediumText}>차량 번호: {busInfo.busnumber}</Text>
+        </View>
+      </>
+    ) : (
+      <Text style={styles.mediumText}>운행 중인 버스 없음</Text>
+    )}
+  </View>
 
         <TouchableOpacity onPress={toggleModal} style={styles.button}>
           <Text style={styles.buttonText}>시간표 보기</Text>
