@@ -66,11 +66,27 @@
       });
     }
 
+    function addMarker(latitude, longitude) {
+      var marker = new Tmapv2.Marker({
+        position: new Tmapv2.LatLng(latitude, longitude),
+        map: map
+      });
+    }
+
+    function addBusMarkers(buses) {
+      buses.forEach(bus => {
+        addMarker(bus.latitude, bus.longitude);
+      });
+    }
+
+
     window.addEventListener("message", function (event) {
       try {
         var data = JSON.parse(event.data);
-        var latitude = data.latitude;
-        var longitude = data.longitude;
+        if (data.buses) {
+        map.setCenter(new Tmapv2.LatLng(data.User_latitude, data.User_longitude));
+        addBusMarkers(data.buses);
+      }
         var User_latitude = data.User_latitude;
         var User_longitude = data.User_longitude;
 
@@ -81,17 +97,6 @@
 
         var moveLatLng = new Tmapv2.LatLng(User_latitude, User_longitude);
         map.setCenter(moveLatLng);
-
-        if (map && latitude && longitude) {
-          currentMarker = new Tmapv2.Marker({
-            position: new Tmapv2.LatLng(latitude, longitude),
-            map: map,
-          });
-        } else {
-          window.ReactNativeWebView.postMessage(
-            "error: map or coordinates not ready"
-          );
-        }
       } catch (error) {
         window.ReactNativeWebView.postMessage(
           "error: parsing message from React Native"

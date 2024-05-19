@@ -7,10 +7,10 @@ export const fetchBusLocation = async () => {
   const response = await fetch(SERVER_URL, { method: "GET" });
   const data = await response.json();
   const contentObj = JSON.parse(data.content);
+  console.log("contentObj: ", contentObj)
 
   return {
-    latitude: contentObj.latitude,
-    longitude: contentObj.longitude,
+    contentObj: contentObj,
     userLocation: await Location.getCurrentPositionAsync({}),
   };
 };

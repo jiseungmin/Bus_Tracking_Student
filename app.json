@@ -23,7 +23,8 @@
           },
           "ios": {}
         }
-      ], [
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
@@ -51,7 +52,14 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "build": {
+        "babel": {
+          "include": []
+        }
+      }
+    },
+    "notification": {
+      "vapidPublicKey": "BBbmLofKOdWoBx2pOTY9Pga8ksm_t11uQFMXaK-WudZjydF5my1qjRro0EWxGcOhDWqQ8RyL15Xf_4WarMLlJ0k"
     },
     "extra": {
       "eas": {

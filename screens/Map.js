@@ -1,23 +1,13 @@
+import React, { useRef, useState, useEffect } from "react";
+import { Alert, Image, Platform, Modal, ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { WebView } from "react-native-webview";
+import * as Notifications from "expo-notifications";
 import { fetchBusLocation } from "../API/api";
 import Timetable from "../TimeTable/TimeTable";
-import { WebView } from "react-native-webview";
-import { StationFileMap } from "../config/stations";
-import * as Notifications from "expo-notifications";
-import React, { useRef, useState, useEffect } from "react";
-import { Alert, Image, Platform, Modal } from "react-native";
 import { fetchTimetableData } from '../TimeTable/fetchTimetableData';
-import {StyleSheet, Text, View, TouchableOpacity, ScrollView} from "react-native";
+import { StationFileMap } from "../config/stations";
 
-
-/* TODO 운전자 앱에서 버스 정보및 시간표 데이터 받기 */
-const busInfo = {
-  busNumber: "11",
-  route: "천안터미널",
-  number: "77사 7973",
-  time: "9:30~10:00~10:30",
-};
-
-/* 알림 처리 */
+// Notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -35,9 +25,27 @@ const Map = ({ route, navigation }) => {
   const [selectedDay, setSelectedDay] = useState("평일");
   const [notification, setNotification] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState("학기");
   const [buttonTitle, setButtonTitle] = useState("현재 버스 위치 확인");
+
+  const [busInfo, setBusInfo] = useState({
+    allBuses: [],
+    route: "",
+    busorder: "",
+    station: "",
+    bustime: "",
+    busnumber: ""
+  });
+
+  const StationNameMap = {
+    CheonanTerminalStation: "천안터미널",
+    CheonanStation: "천안역",
+    CheonanAsanStation: "천안아산역",
+    OnyangOncheonStation: "온양온천역(아산터미널)",
+    CheonanCampus: "천안캠퍼스",
+  };
 
   const Station = route.params.screenName;
   const webviewSource = Platform.OS === "web" ? `./assets/tmap_${Station}.html` : StationFileMap[Station].uri;
@@ -49,19 +57,20 @@ const Map = ({ route, navigation }) => {
     }
   };
 
+  const toggleInfoModal = () => {
+    setInfoModalVisible(!infoModalVisible);
+  };
+
   useEffect(() => {
-    // 알림 수신 리스너
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
-
     fetchData();
   }, []);
 
   useEffect(() => {
     fetchData();
   }, [selectedSchedule, selectedDay]);
-
 
   const handleScheduleSelect = (schedule) => {
     setSelectedSchedule(schedule);
@@ -75,13 +84,12 @@ const Map = ({ route, navigation }) => {
     setLoading(true);
     setError(null);
     setData([]);
-
     const { data, error } = await fetchTimetableData(selectedSchedule, selectedDay, Station);
+    
     setData(data);
     setError(error);
     setLoading(false);
   };
-
 
   const fetchLocation = async () => {
     if (isButtonDisabled) {
@@ -90,32 +98,35 @@ const Map = ({ route, navigation }) => {
     }
     setIsButtonDisabled(true);
     try {
-      const { latitude, longitude, userLocation } = await fetchBusLocation();
-
-      /* TODO 임의로 유저의 위도 경도 설정 해놓음 나중에 수정 */
-      const User_latitude = 36.7980889;
-      const User_longitude = 127.0817586;
-
-      if (Platform.OS === "web") {
-        window.frames[0].postMessage(
-          JSON.stringify({
-            latitude,
-            longitude,
-            User_latitude,
-            User_longitude,
-          }),
-          "*"
-        );
-      } else {
-        if (webViewRef.current) {
-          webViewRef.current.postMessage(
-            JSON.stringify({
-              latitude,
-              longitude,
-              User_latitude,
-              User_longitude,
-            })
+      const { contentObj } = await fetchBusLocation();
+      console.log("contentObj: ", contentObj);
+      
+      if (contentObj.length > 0) {
+        const firstBus = contentObj[0];
+        setBusInfo({
+          allBuses: contentObj,
+          route: firstBus.route || "",  // Assuming 'route' is a field in your bus object
+          busorder: contentObj.map(bus => bus.busorder).join(", "),
+          station: firstBus.station,
+          bustime: firstBus.BusTime,
+          busnumber: firstBus.busNumber,
+        });
+        
+        const User_latitude = 36.7980889;
+        const User_longitude = 127.0817586;
+        const { latitude, longitude } = firstBus;
+        
+        if (Platform.OS === "web") {
+          window.frames[0].postMessage(
+            JSON.stringify({  buses: contentObj, User_latitude, User_longitude }),
+            "*"
           );
+        } else {
+          if (webViewRef.current) {
+            webViewRef.current.postMessage(
+              JSON.stringify({ latitude, longitude, User_latitude, User_longitude })
+            );
+          }
         }
       }
     } catch (error) {
@@ -126,7 +137,6 @@ const Map = ({ route, navigation }) => {
       }, 3000);
     }
   };
-
 
   return (
     <View style={styles.container}>
@@ -147,13 +157,18 @@ const Map = ({ route, navigation }) => {
       <View style={styles.infoContainer}>
         <View style={styles.imgContainer}>
           <Image source={require("../assets/icon_bus.png")} style={styles.busIcon} />
-          <Text style={styles.smallText}>{`차량 순서 ${busInfo.busNumber}`}</Text>
+          <Text style={styles.boldText}>{StationNameMap[Station]}</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.boldText}>{busInfo.route}</Text>
-          <Text style={styles.mediumText}>운행 시간 : {busInfo.time}</Text>
+          <View style={styles.row}>
+            <Text style={styles.mediumText}>{`현재 운행중인 차량 순서: ${busInfo.busorder}`}</Text>
+            <TouchableOpacity onPress={toggleInfoModal} style={styles.inlineButton}>
+              <Text style={styles.inlineButtonText}>상세 정보</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.numberContainer}>
-            <Text style={styles.mediumText}>차량 번호 : {busInfo.number}</Text>
+            <Text style={styles.mediumText}>운행 시간: {busInfo.bustime}</Text>
+            <Text style={styles.mediumText}>차량 번호: {busInfo.busnumber}</Text>
           </View>
         </View>
 
@@ -163,73 +178,95 @@ const Map = ({ route, navigation }) => {
       </View>
 
       <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>운행 시간표</Text>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={[styles.scheduleButton, selectedSchedule === "학기" && styles.selectedButton]}
+          onPress={() => handleScheduleSelect("학기")}
+        >
+          <Text style={styles.buttonText}>학기</Text>
+        </TouchableOpacity>
+        {(Station !== "CheonanStation" && Station !== "CheonanCampus") && (
+          <TouchableOpacity
+            style={[styles.scheduleButton, selectedSchedule === "방학" && styles.selectedButton]}
+            onPress={() => handleScheduleSelect("방학")}
+          >
+            <Text style={styles.buttonText}>방학</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      <View style={styles.buttonRow}>
+        {Station === "CheonanAsanStation" || Station === "CheonanTerminalStation" ? (
+          <>
+            <TouchableOpacity
+              style={[styles.dayButton, selectedDay === "평일" && styles.selectedButton]}
+              onPress={() => handleDaySelect("평일")}
+            >
+              <Text style={styles.buttonText}>평일</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dayButton, selectedDay === "토요일/공휴일" && styles.selectedButton]}
+              onPress={() => handleDaySelect("토요일/공휴일")}
+            >
+              <Text style={styles.buttonText}>토요일/공휴일</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dayButton, selectedDay === "일요일" && styles.selectedButton]}
+              onPress={() => handleDaySelect("일요일")}
+            >
+              <Text style={styles.buttonText}>일요일</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={[styles.dayButton, selectedDay === "평일" && styles.selectedButton]}
+            onPress={() => handleDaySelect("평일")}
+          >
+            <Text style={styles.buttonText}>평일</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.scrollViewContent}>
+          <Timetable
+            loading={loading}
+            error={error}
+            data={data}
+            Station={Station}
+            selectedSchedule={selectedSchedule}
+            selectedDay={selectedDay}
+            styles={styles}
+          />
+        </View>
+      </ScrollView>
+      <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>닫기</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+      <Modal animationType="slide" transparent={true} visible={infoModalVisible} onRequestClose={toggleInfoModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>운행 시간표</Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={[styles.scheduleButton, selectedSchedule === "학기" && styles.selectedButton]}
-                onPress={() => handleScheduleSelect("학기")}
-              >
-                <Text style={styles.buttonText}>학기</Text>
-              </TouchableOpacity>
-              {(Station !== "CheonanStation" && Station !== "CheonanCampus") && (
-                <TouchableOpacity
-                  style={[styles.scheduleButton, selectedSchedule === "방학" && styles.selectedButton]}
-                  onPress={() => handleScheduleSelect("방학")}
-                >
-                  <Text style={styles.buttonText}>방학</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-            <View style={styles.buttonRow}>
-              {Station === "CheonanAsanStation" || Station === "CheonanTerminalStation" ? (
-                <>
-                  <TouchableOpacity
-                    style={[styles.dayButton, selectedDay === "평일" && styles.selectedButton]}
-                    onPress={() => handleDaySelect("평일")}
-                  >
-                    <Text style={styles.buttonText}>평일</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.dayButton, selectedDay === "토요일/공휴일" && styles.selectedButton]}
-                    onPress={() => handleDaySelect("토요일/공휴일")}
-                  >
-                    <Text style={styles.buttonText}>토요일/공휴일</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.dayButton, selectedDay === "일요일" && styles.selectedButton]}
-                    onPress={() => handleDaySelect("일요일")}
-                  >
-                    <Text style={styles.buttonText}>일요일</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <TouchableOpacity
-                  style={[styles.dayButton, selectedDay === "평일" && styles.selectedButton]}
-                  onPress={() => handleDaySelect("평일")}
-                >
-                  <Text style={styles.buttonText}>평일</Text>
-                </TouchableOpacity>
-              )}
-            </View>
+            <Text style={styles.modalTitle}>버스 상세 정보</Text>
             <ScrollView style={styles.scrollView}>
-              <Timetable
-                loading={loading}
-                error={error}
-                data={data}
-                Station={Station}
-                selectedSchedule={selectedSchedule}
-                selectedDay={selectedDay}
-                styles={styles}
-              />
+              {busInfo.allBuses.map((bus, index) => (
+                <View key={index} style={styles.busInfoContainer}>
+                  <Text style={styles.mediumText}>{`배차 순서: ${bus.busorder}`}</Text>
+                  <Text style={styles.mediumText}>{`운행 시간: ${bus.BusTime}`}</Text>
+                  <Text style={styles.mediumText}>{`차량 번호: ${bus.busNumber}`}</Text>
+                </View>
+              ))}
             </ScrollView>
-            <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+            <TouchableOpacity onPress={toggleInfoModal} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>닫기</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+</Modal>
     </View>
   );
 };
@@ -237,49 +274,66 @@ const Map = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff", // 밝은 회색 톤의 배경색
+    backgroundColor: "#fff",
   },
   webView: {
-    flex: 1, // 화면 높이의 일정 부분을 차지하도록 설정
+    flex: 1,
   },
   button: {
-    backgroundColor: "#244092", // iOS 스타일의 기본 파란색
+    backgroundColor: "#244092",
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 20, // 좌우 마진 추가
+    marginHorizontal: 20,
     marginTop: 10,
   },
   buttonText: {
     fontSize: 16,
-    color: "#FFFFFF", // 텍스트 색상을 흰색으로
+    color: "#FFFFFF",
     fontWeight: "bold",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
   },
   infoContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
-    paddingHorizontal: 30, // 좌우 패딩 추가
-    paddingVertical: 30, // 상하 패딩 추가
-    backgroundColor: "#FFFFFF", // 백그라운드를 흰색으로 설정
-    shadowColor: "#000", // 그림자 색상
-    shadowOffset: { width: 0, height: 1 }, // 그림자 위치
-    shadowOpacity: 0.2, // 그림자 투명도
-    shadowRadius: 1.41, // 그림자 반경
-    elevation: 2, // 안드로이드용 그림자
+    paddingHorizontal: 30,
+    paddingVertical: 30,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  inlineButton: {
+    backgroundColor: "#244092",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  inlineButtonText: {
+    fontSize: 14,
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
   textContainer: {
-    flex: 1, // 남은 공간 모두 차지
+    flex: 1,
     marginLeft: 30,
   },
   floatingButton: {
     position: "absolute",
-    top: Platform.OS === "ios" ? 50 : 10, // 플랫폼에 따라 상단 여백 조정
+    top: Platform.OS === "ios" ? 50 : 10,
     left: 10,
     zIndex: 10,
   },
   backIcon: {
-    width: 40, // 아이콘 크기 조정
+    width: 40,
     height: 40,
   },
   imgContainer: {
@@ -287,7 +341,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   busIcon: {
-    width: 55, // 아이콘 크기 조정
+    width: 55,
     height: 55,
     marginBottom: 10,
   },
@@ -297,14 +351,47 @@ const styles = StyleSheet.create({
     color: "#444",
     marginBottom: 5,
   },
+  busInfoContainer: {
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: "#f1f1f1",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  busInfoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 5,
+  },
+  label: {
+    fontSize: 18,
+    color: "#555",
+    fontWeight: "bold",
+  },
+  value: {
+    fontSize: 18,
+    color: "#555",
+  },
+  itemContainer: {
+    marginVertical: 10,
+    padding: 15,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  itemText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
   mediumText: {
+    marginBottom: 3,
     fontSize: 20,
     color: "#444",
   },
-  smallText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#444",
+  numberContainer: {
+    marginTop: 10,
   },
   modalOverlay: {
     flex: 1,
@@ -314,7 +401,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "80%",
-    height: "80%", // 모달 높이 설정
+    height: "80%",
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -335,25 +422,6 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "white",
     fontSize: 16,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  noDataText: {
-    color: "#444",
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  itemContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  itemText: {
-    fontSize: 16,
-    color: "#444",
   },
   buttonRow: {
     flexDirection: "row",
@@ -381,7 +449,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#112244",
   },
   scrollView: {
-    width: "100%", // 스크롤뷰 너비를 전체로 설정
+    width: "100%",
+  },
+  scrollViewContent: {
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+  },
+  noDataText: {
+    fontSize: 16,
+    color: '#777',
   },
 });
 
