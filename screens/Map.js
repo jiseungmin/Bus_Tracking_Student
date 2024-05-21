@@ -47,7 +47,7 @@ const Map = ({ route, navigation }) => {
   };
 
   const Station = route.params.screenName;
-  const webviewSource = Platform.OS === "web" ? `./assets/tmap_${Station}.html` : StationFileMap[Station].uri;
+  const webviewSource = Platform.OS === "web" ? `./tmap_${Station}.html` : StationFileMap[Station].uri;
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);

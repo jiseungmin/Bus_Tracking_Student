@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* 스크롤바 추가 방지 */
+      height: 100%; /* 페이지의 전체 높이를 사용하도록 보장 */
+    }
+  
+    #map_div {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=9syZeMdaYD79paz4xmvSpYa8AOxVgRxay0YUQWR5"></script>
+  <script type="text/javascript">
+    var map;
+    var currentMarker = null;
+
+    function initTmap() {
+      map = new Tmapv2.Map("map_div", {
+        center: new Tmapv2.LatLng(36.8002, 127.0715),
+        width: "100%",
+        height: "100%",
+        zoom: 16,
+      });
+
+      // 천안역 경로
+      var coordinates = [
+          new Tmapv2.LatLng(36.8002, 127.0715), // First coordinate
+
+          new Tmapv2.LatLng(36.79764, 127.079), // Sixth coordinate
+          new Tmapv2.LatLng(36.79776, 127.0801), // Seventh coordinate
+          new Tmapv2.LatLng(36.7975, 127.0861), // Eighth coordinate
+          new Tmapv2.LatLng(36.80026, 127.0857), // Ninth coordinate
+          new Tmapv2.LatLng(36.80039, 127.0868), // Tenth coordinate
+          new Tmapv2.LatLng(36.79579, 127.0876), // Eleventh coordinate
+        ];
+
+      new Tmapv2.Polyline({
+        path: coordinates,
+        strokeColor: "#FF0000",
+        strokeWeight: 5,
+        map: map,
+      });
+    }
+
+    window.addEventListener("message", function (event) {
+      try {
+        var data = JSON.parse(event.data);
+        var latitude = data.latitude;
+        var longitude = data.longitude;
+        var User_latitude = data.User_latitude;
+        var User_longitude = data.User_longitude;
+
+        if (currentMarker) {
+          currentMarker.setMap(null);
+          currentMarker = null;
+        }
+
+        var moveLatLng = new Tmapv2.LatLng(User_latitude, User_longitude);
+        map.setCenter(moveLatLng);
+
+        if (map && latitude && longitude) {
+          currentMarker = new Tmapv2.Marker({
+            position: new Tmapv2.LatLng(latitude, longitude),
+            map: map,
+          });
+        } else {
+          window.ReactNativeWebView.postMessage(
+            "error: map or coordinates not ready"
+          );
+        }
+      } catch (error) {
+        window.ReactNativeWebView.postMessage(
+          "error: parsing message from React Native"
+        );
+        console.error("Error parsing message from React Native:", error);
+      }
+    });
+  </script>
+</head>
+<body onload="initTmap()">
+  <div id="map_div"></div>
+</body>
+</html>
