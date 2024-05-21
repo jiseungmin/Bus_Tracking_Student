@@ -29,8 +29,13 @@ function StackScreen() {
       <Stack.Screen
         name="TimeTable"
         component={TimeTable}
-        options={{ headerShown: false }}
-      ></Stack.Screen>
+        options={{
+          headerShown: true,
+          title: "시간표",
+          headerTitleStyle: { fontWeight: "bold" },
+          headerTintColor: "black",
+        }}
+      />
     </Stack.Navigator>
   );
 }

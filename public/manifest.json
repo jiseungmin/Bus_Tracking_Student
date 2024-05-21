@@ -1,6 +1,6 @@
 {
-  "short_name": "Expo App",
-  "name": "Expo Router Sample",
+  "short_name": "SMUBUS",
+  "name": "SMUBUS",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "./adaptive-icon.png",
+      "src": "./intro.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "./adaptive-icon.png",
+      "src": "./intro.png",
       "type": "image/png",
       "sizes": "512x512"
     }

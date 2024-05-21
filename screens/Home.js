@@ -11,7 +11,7 @@ import {
   Dimensions,
   SafeAreaView,
   ImageBackground,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 
 Notifications.setNotificationHandler({
@@ -102,7 +102,7 @@ const Home = ({ navigation }) => {
 
       <ImageBackground
         source={require("../assets/roadf.png")}
-        resizeMode="contain"
+        resizeMode="cover"
         style={styles.contentContainer}
       >
         <TouchableOpacity
@@ -126,16 +126,17 @@ const Home = ({ navigation }) => {
           <Text style={styles.item}>천안{"\n"}아산역</Text>
         </TouchableOpacity>
       </ImageBackground>
+
       <ImageBackground
         source={require("../assets/roadf.png")}
-        resizeMode="contain"
+        resizeMode="cover"
         style={styles.contentContainer}
       >
         <TouchableOpacity
           style={styles.btncontainer}
           onPress={() => goToScreen("OnyangOncheonStation")}
         >
-          <Text style={styles.item}> 온양온천역{"\n"}(아산터미널)</Text>
+          <Text style={styles.item}>온양{"\n"}온천역</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -159,38 +160,37 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#f0f0f0",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 20,
   },
   header: {
-    flex: 1,
     backgroundColor: "#244092",
     width: "100%",
+    borderRadius: 10, // Slightly rounded corners
     alignItems: "center",
-    padding: 15,
+    paddingVertical: 20,
   },
   contentContainer: {
-    flex: 1.5,
+    flex: 1,
     width: "100%",
-    backgroundColor: "#f4f4f4",
     flexDirection: "row",
-    justifyContent: "space-around", // 요소간 간격을 space-around로 변경하여 균등 배분
-    alignItems: "center", // 모든 자식 요소를 세로 방향 가운데로 정렬
-    //padding: 15, // 패딩 조정
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: 20,
   },
   btncontainer: {
-    width: width * 0.28, // 버튼 크기 조정
-    height: height * 0.08,
-    borderRadius: 8, // 테두리 반경 조정
+    width: "28%", // Use percentage for responsive design
+    height: 60, // Fixed height for uniformity
+    borderRadius: 10, // Slightly rounded corners
     backgroundColor: "#eee",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
     elevation: 5,
   },
   loaderContainer: {
@@ -199,43 +199,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   item: {
-    fontSize: 18, // 폰트 크기 조정
-    fontWeight: "500", // 폰트 두께 조정
+    fontSize: 18,
+    fontWeight: "500",
+    fontWeight: "bold",
     textAlign: "center",
   },
   textStyle: {
     color: "#fff",
-    fontSize: 28, // 텍스트 크기 조정
+    fontSize: 28,
     fontWeight: "bold",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 5,
+    textShadowColor: "#000",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 20,
     marginTop: 20,
-    width: "90%", // 카드의 너비를 늘려 콘텐츠가 더 잘 보이게 함
-    height: "60%",
+    width: "90%",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
   },
   noticeTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 5,
-    color: "#333", // 텍스트 색상 조정
+    marginBottom: 10,
+    color: "#333",
   },
   noticeContent: {
     fontSize: 20,
-    color: "#666", // 텍스트 색상을 더 진하게 조정
+    color: "#666",
     textAlign: "center",
   },
 });
