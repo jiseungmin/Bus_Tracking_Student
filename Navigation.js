@@ -1,6 +1,7 @@
 import React from "react";
 import Map from "./screens/Map";
 import Home from "./screens/Home";
+import { Image } from "react-native";
 import Splash from "./screens/Splash";
 import TimeTable from "./screens/TimeTable";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -34,6 +35,17 @@ function StackScreen() {
           title: "시간표",
           headerTitleStyle: { fontWeight: "bold" },
           headerTintColor: "black",
+          headerBackImage: () => (
+            <Image
+              source={require("./assets/backgo.png")}
+              style={{
+                width: 32,
+                height: 32,
+                marginLeft: 10,
+                marginTop: 5,
+              }}
+            />
+          ),
         }}
       />
     </Stack.Navigator>
