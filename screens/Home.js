@@ -87,9 +87,9 @@ const Home = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.textStyle}>SMUBUS</Text>
         <View style={styles.card}>
-          {loading ? ( // 로딩 상태에 따라 스피너 또는 공지사항 표시
+          {loading ? (
             <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" color="#244092" />
+              <ActivityIndicator size="small" color="#244092" />
             </View>
           ) : (
             <>
@@ -100,59 +100,61 @@ const Home = ({ navigation }) => {
         </View>
       </View>
 
-      <ImageBackground
-        source={require("../assets/roadf.png")}
-        resizeMode="cover"
-        style={styles.contentContainer}
-      >
-        <TouchableOpacity
-          style={styles.btncontainer}
-          onPress={() => goToScreen("CheonanTerminalStation")}
+      <View style={styles.contentContainer}>
+        <ImageBackground
+          source={require('../assets/roadf.png')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
         >
-          <Text style={styles.item}>천안{"\n"}터미널</Text>
-        </TouchableOpacity>
+          <View style={styles.buttonWrapper}>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.btncontainer}
+                onPress={() => goToScreen("CheonanTerminalStation")}
+              >
+                <Text style={styles.item}>천안{"\n"}터미널</Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.btncontainer}
-          onPress={() => goToScreen("CheonanStation")}
-        >
-          <Text style={styles.item}>천안역</Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btncontainer}
+                onPress={() => goToScreen("CheonanStation")}
+              >
+                <Text style={styles.item}>천안역</Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.btncontainer}
-          onPress={() => goToScreen("CheonanAsanStation")}
-        >
-          <Text style={styles.item}>천안{"\n"}아산역</Text>
-        </TouchableOpacity>
-      </ImageBackground>
+              <TouchableOpacity
+                style={styles.btncontainer}
+                onPress={() => goToScreen("CheonanAsanStation")}
+              >
+                <Text style={styles.item}>천안{"\n"}아산역</Text>
+              </TouchableOpacity>
+            </View>
 
-      <ImageBackground
-        source={require("../assets/roadf.png")}
-        resizeMode="cover"
-        style={styles.contentContainer}
-      >
-        <TouchableOpacity
-          style={styles.btncontainer}
-          onPress={() => goToScreen("OnyangOncheonStation")}
-        >
-          <Text style={styles.item}>온양{"\n"}온천역</Text>
-        </TouchableOpacity>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.btncontainer}
+                onPress={() => goToScreen("OnyangOncheonStation")}
+              >
+                <Text style={styles.item}>온양{"\n"}온천역</Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.btncontainer}
-          onPress={() => goToScreen("CheonanCampus")}
-        >
-          <Text style={styles.item}>천안{"\n"}캠퍼스</Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btncontainer}
+                onPress={() => goToScreen("CheonanCampus")}
+              >
+                <Text style={styles.item}>천안{"\n"}캠퍼스</Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.btncontainer}
-          onPress={() => goToTimeTable("TimeTable")}
-        >
-          <Text style={styles.item}>시간표{"\n"}바로가기</Text>
-        </TouchableOpacity>
-      </ImageBackground>
+              <TouchableOpacity
+                style={styles.btncontainer}
+                onPress={() => goToTimeTable("TimeTable")}
+              >
+                <Text style={styles.item}>시간표{"\n"}바로가기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ImageBackground>
+      </View>
     </SafeAreaView>
   );
 };
@@ -161,30 +163,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f0f0f0",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 20,
   },
   header: {
     backgroundColor: "#244092",
     width: "100%",
-    borderRadius: 10, // Slightly rounded corners
     alignItems: "center",
     paddingVertical: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   contentContainer: {
     flex: 1,
     width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
+    borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: "white",
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 20,
+    paddingHorizontal: 5,
+    marginTop: -5,
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonWrapper: {
+    width: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginVertical: 60,
   },
   btncontainer: {
     width: "28%", // Use percentage for responsive design
     height: 60, // Fixed height for uniformity
     borderRadius: 10, // Slightly rounded corners
-    backgroundColor: "#eee",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -224,6 +248,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 5,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   noticeTitle: {
     fontSize: 24,

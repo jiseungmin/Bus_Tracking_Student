@@ -108,13 +108,12 @@ const Map = ({ route, navigation }) => {
   };
 
   const fetchLocation = async () => {
+    console.log(isButtonDisabled)
     if (isButtonDisabled) {
-      Alert.alert("잠시만 기다려주세요.", "3초 후에 다시 시도할 수 있습니다.", [
-        { text: "확인" },
-      ]);
       return;
     }
     setIsButtonDisabled(true);
+    setButtonTitle("잠시 후에 다시 눌러주세요");
     try {
       const { contentObj } = await fetchBusLocation(Station);
       console.log("contentObj: ", contentObj);
@@ -168,6 +167,7 @@ const Map = ({ route, navigation }) => {
     } finally {
       setTimeout(() => {
         setIsButtonDisabled(false);
+        setButtonTitle("현재 버스 위치 확인");
       }, 3000);
     }
   };
@@ -199,14 +199,6 @@ const Map = ({ route, navigation }) => {
           style={styles.webView}
         />
       )}
-
-      <TouchableOpacity
-        onPress={fetchLocation}
-        style={styles.button}
-        disabled={loading}
-      >
-        <Text style={styles.buttonText}>{buttonTitle}</Text>
-      </TouchableOpacity>
 
       <View style={styles.infoContainer}>
         <View style={styles.imgContainer}>
@@ -249,6 +241,14 @@ const Map = ({ route, navigation }) => {
           )}
         </View>
       </View>
+
+      <TouchableOpacity
+        onPress={fetchLocation}
+        style={[styles.button, isButtonDisabled && styles.disabledButton]}
+        disabled={loading || isButtonDisabled}
+      >
+        <Text style={styles.buttonText}>{buttonTitle}</Text>
+      </TouchableOpacity>
 
       <Modal
         animationType="slide"
@@ -306,7 +306,7 @@ const Map = ({ route, navigation }) => {
                       selectedDay === "토요일/공휴일" && styles.selectedButton,
                       loading && styles.disabledButton,
                     ]}
-                    onPress={() => handleDaySelect("토요일/공휴일")}
+                    onPress={() => handleDaySelect("토요일\n공휴일")}
                     disabled={loading}
                   >
                     <Text style={styles.buttonText}>토요일/공휴일</Text>
@@ -414,11 +414,9 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#244092",
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 2,
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 20,
-    marginTop: 10,
   },
   buttonText: {
     fontSize: 14,
@@ -444,7 +442,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
-    marginBottom: 10,
   },
   inlineButton: {
     backgroundColor: "#244092",
