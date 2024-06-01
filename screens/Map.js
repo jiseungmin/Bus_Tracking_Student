@@ -115,7 +115,7 @@ const Map = ({ route, navigation }) => {
     setIsButtonDisabled(true);
     setButtonTitle("잠시 후에 다시 눌러주세요");
     try {
-      const { contentObj } = await fetchBusLocation(Station);
+      const { contentObj,userLocation } = await fetchBusLocation(Station);
       console.log("contentObj: ", contentObj);
 
       if (contentObj.length > 0) {
@@ -128,8 +128,8 @@ const Map = ({ route, navigation }) => {
           busnumber: firstBus.busNumber,
         });
 
-        const User_latitude = 36.7980889;
-        const User_longitude = 127.0817586;
+        const User_latitude = userLocation.coords.latitude
+        const User_longitude = userLocation.coords.longitude
         const { latitude, longitude } = firstBus;
 
         if (Platform.OS === "web") {
@@ -306,10 +306,10 @@ const Map = ({ route, navigation }) => {
                       selectedDay === "토요일/공휴일" && styles.selectedButton,
                       loading && styles.disabledButton,
                     ]}
-                    onPress={() => handleDaySelect("토요일\n공휴일")}
+                    onPress={() => handleDaySelect("토요일/공휴일")}
                     disabled={loading}
                   >
-                    <Text style={styles.buttonText}>토요일/공휴일</Text>
+                    <Text style={styles.buttonText}>토요일{"\n"}공휴일</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#244092",
-    padding: 12,
+    padding: 18,
     borderRadius: 2,
     alignItems: "center",
     justifyContent: "center",
@@ -430,6 +430,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    justifyContent: "space-between",
   },
   infoContainer: {
     flexDirection: "row",
@@ -448,7 +449,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 5,
-    marginLeft: 10,
   },
   inlineButtonText: {
     fontSize: 14,
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginRight: 10,
   },
   floatingButton: {
     position: "absolute",
@@ -605,5 +605,6 @@ const styles = StyleSheet.create({
     color: "#777",
   },
 });
+
 
 export default Map;
