@@ -46,6 +46,8 @@ const Map = ({ route, navigation }) => {
     station: "",
     bustime: "",
     busnumber: "",
+    latitude: null,
+    longitude: null,
   });
 
   const StationNameMap = {
@@ -126,10 +128,12 @@ const Map = ({ route, navigation }) => {
           station: firstBus.station,
           bustime: firstBus.BusTime,
           busnumber: firstBus.busNumber,
+          latitude: firstBus.latitude,
+          longitude: firstBus.longitude,
         });
 
-        const User_latitude = userLocation.coords.latitude
-        const User_longitude = userLocation.coords.longitude
+        const User_latitude = userLocation.coords.latitude;
+        const User_longitude = userLocation.coords.longitude;
         const { latitude, longitude } = firstBus;
 
         if (Platform.OS === "web") {
@@ -160,6 +164,8 @@ const Map = ({ route, navigation }) => {
           station: "",
           bustime: "",
           busnumber: "",
+          latitude: null,
+          longitude: null,
         });
       }
     } catch (error) {
@@ -382,6 +388,12 @@ const Map = ({ route, navigation }) => {
                   <Text
                     style={styles.mediumText}
                   >{`차량 번호: ${bus.busNumber}`}</Text>
+                  <Text
+                    style={styles.mediumText}
+                  >{`위도: ${bus.latitude}`}</Text>
+                  <Text
+                    style={styles.mediumText}
+                  >{`경도: ${bus.longitude}`}</Text>
                 </View>
               ))}
             </ScrollView>

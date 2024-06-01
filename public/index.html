@@ -12,6 +12,8 @@
       html,
       body {
         height: 100%;
+        margin: 0;
+        padding: 0;
       }
       /* These styles disable body scrolling if you are using <ScrollView> */
       body {
@@ -23,6 +25,30 @@
         height: 100%;
         flex: 1;
       }
+
+      /* Splash screen styles */
+      .splash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        z-index: 9999;
+      }
+
+      .splash img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      /* 숨기기 위한 클래스 */
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
 
@@ -33,5 +59,16 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
+
+    <!-- Splash screen element -->
+    <div class="splash">
+      <img src="splash_v3.png" alt="Splash Screen">
+    </div>
+
+    <script>
+      window.addEventListener('load', function() {
+        document.querySelector('.splash').classList.add('hidden');
+      });
+    </script>
   </body>
 </html>

@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "plash_v3.png",
+      "src": "intro.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "plash_v3.png",
+      "src": "splash_v3.png",
       "type": "image/png",
       "sizes": "512x512"
     }
