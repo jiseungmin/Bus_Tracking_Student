@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device=width, initial-scale=1.0">
   <title>Map</title>
   <style>
     body, html {
@@ -86,6 +86,8 @@
       var marker = new Tmapv2.Marker({
         position: new Tmapv2.LatLng(latitude, longitude),
         map: map,
+        icon: "./bus.png",
+        iconSize: new Tmapv2.Size(36, 36) // Set icon size
       });
 
       var infoWindow = new Tmapv2.InfoWindow({
@@ -134,7 +136,7 @@
           position: new Tmapv2.LatLng(latitude, longitude),
           map: map,
           icon: "./user.png",
-          iconSize: new Tmapv2.Size(24, 38) // Set icon size
+          iconSize: new Tmapv2.Size(16, 16) // Set icon size
         });
       }
     }
@@ -143,9 +145,16 @@
       try {
         var data = JSON.parse(event.data);
         if (data.buses) {
-          map.setCenter(new Tmapv2.LatLng(data.User_latitude, data.User_longitude));
-          addBusMarkers(data.buses);
+          if (data.buses.length === 0) {
+            clearMarkers(); // Clear existing markers if no buses data
+          } else {
+            map.setCenter(new Tmapv2.LatLng(data.User_latitude, data.User_longitude));
+            addBusMarkers(data.buses);
+          }
+        } else {
+          clearMarkers(); // Clear markers if buses data is undefined or null
         }
+
         var User_latitude = data.User_latitude;
         var User_longitude = data.User_longitude;
 

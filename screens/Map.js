@@ -110,14 +110,38 @@ const Map = ({ route, navigation }) => {
   };
 
   const fetchLocation = async () => {
-    console.log(isButtonDisabled)
+    console.log(isButtonDisabled);
     if (isButtonDisabled) {
       return;
     }
     setIsButtonDisabled(true);
     setButtonTitle("잠시 후에 다시 눌러주세요");
+    
+    let userLocation = null;
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          updateBusLocation(userLocation);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          updateBusLocation(null);
+        }
+      );
+    } else {
+      console.error("Geolocation not supported");
+      updateBusLocation(null);
+    }
+  };
+
+  const updateBusLocation = async (userLocation) => {
     try {
-      const { contentObj,userLocation } = await fetchBusLocation(Station);
+      const { contentObj } = await fetchBusLocation(Station);
       console.log("contentObj: ", contentObj);
 
       if (contentObj.length > 0) {
@@ -132,8 +156,9 @@ const Map = ({ route, navigation }) => {
           longitude: firstBus.longitude,
         });
 
-        const User_latitude = userLocation.coords.latitude;
-        const User_longitude = userLocation.coords.longitude;
+        const User_latitude = userLocation ? userLocation.latitude : null;
+        const User_longitude = userLocation ? userLocation.longitude : null;
+
         const { latitude, longitude } = firstBus;
 
         if (Platform.OS === "web") {
