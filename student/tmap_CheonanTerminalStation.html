@@ -31,12 +31,51 @@
     var markers = [];
     var userMarker = null;
 
+
+    // 선문대 아산 캠퍼스 36.80034, 127.0714
+      // 불당 산업 지구 36.81124, 127.1086
+      // 천안종합 운동장 36.81864, 127.1107
+      // 그린빌 아파트 36.82321, 127.1212
+      // 한방 병원 건너편 36.82509, 127.1287
+      // 성정동 스타벅스 36.82546, 127.1402
+      // 천안 터미널 36.81887, 127.1529
+      // 두정동 맥도날드 36.82530, 127.1287
+      // 홈마트 애브리데이 36.82340, 127.1210
+      // 종합운동장 36.81956, 127.1107
+      // 서울 대정 병원 36.81170, 127.1083
+      // 갤러리아 36.80153, 127.1046
+
+    var CheonanBusStop = [
+      { name: "선문대 아산 캠퍼스", lat: 36.80034, lng: 127.0714 },
+      { name: "불당 산업 지구", lat: 36.81124, lng: 127.1086 },
+      { name: "천안종합 운동장", lat: 36.81864, lng: 127.1107 },
+      { name: "그린빌 아파트", lat: 36.82321, lng: 127.1212 },
+      { name: "한방 병원 건너편", lat: 36.82509, lng: 127.1287 },
+      { name: "성정동 스타벅스", lat: 36.82546, lng: 127.1402 },
+      { name: "천안 터미널", lat: 36.81887, lng: 127.1535 },
+      { name: "두정동 맥도날드", lat: 36.82530, lng: 127.1287 },
+      { name: "홈마트 애브리데이", lat: 36.82340, lng: 127.1210 },
+      { name: "종합운동장", lat: 36.81956, lng: 127.1107 },
+      { name: "서울 대정 병원", lat: 36.81170, lng: 127.1083 },
+      { name: "갤러리아", lat: 36.80153, lng: 127.1046 }
+    ];
+
     function initTmap() {
       map = new Tmapv2.Map("map_div", {
         center: new Tmapv2.LatLng(36.8002, 127.0715),
         width: "100%",
         height: "100%",
         zoom: 16,
+      });
+
+      CheonanBusStop.forEach(function (stop) {
+        new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(stop.lat, stop.lng),
+          map: map,
+          icon: "./bus_stop.png",
+          iconSize: new Tmapv2.Size(24, 32), // Set icon size
+          title: stop.name
+        });
       });
 
       // 천안터미널 경로

@@ -31,6 +31,12 @@
     var markers = [];
     var userMarker = null;
 
+    var CheonanBusStop = [
+      { name: "선문대 아산 캠퍼스", lat: 36.80034, lng: 127.0714 },
+      { name: "팬타 포트", lat: 36.79716, lng: 127.1002 },
+      { name: "천안 아산역", lat: 36.79459, lng: 127.1044 }
+    ];
+
     function initTmap() {
       map = new Tmapv2.Map("map_div", {
         center: new Tmapv2.LatLng(36.8002, 127.0715),
@@ -38,6 +44,21 @@
         height: "100%",
         zoom: 16,
       });
+
+      CheonanBusStop.forEach(function (stop) {
+        new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(stop.lat, stop.lng),
+          map: map,
+          icon: "./bus_stop.png",
+          iconSize: new Tmapv2.Size(24, 24), // Set icon size
+          title: stop.name
+        });
+      });
+
+
+      // 선문대 아산 캠퍼스 36.80034, 127.0714
+      // 팬타 포트 36.79716, 127.1002
+      // 천안 아산역 36.79459, 127.1044
 
       // 천안터미널 경로
       var coordinates = [

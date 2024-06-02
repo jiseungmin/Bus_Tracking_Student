@@ -31,6 +31,14 @@
     var markers = [];
     var userMarker = null;
 
+    var CheonanBusStop = [
+      { name: "선문대 아산 캠퍼스", lat: 36.80034, lng: 127.0714 },
+      { name: "주은 아파트 버스 정류장", lat: 36.79007, lng: 127.0125 },
+      { name: "온양 온천 역", lat: 36.78358, lng: 127.0050 },
+      { name: "아산 동양 고속 터미널", lat: 36.78440, lng: 127.0141 },
+      { name: "온양 권곡초 버스정류장", lat: 36.79011, lng: 127.0125 }
+    ];
+
     function initTmap() {
       map = new Tmapv2.Map("map_div", {
         center: new Tmapv2.LatLng(36.8002, 127.0715),
@@ -38,6 +46,24 @@
         height: "100%",
         zoom: 16,
       });
+
+      CheonanBusStop.forEach(function (stop) {
+        new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(stop.lat, stop.lng),
+          map: map,
+          icon: "./bus_stop.png",
+          iconSize: new Tmapv2.Size(24, 24), // Set icon size
+          title: stop.name
+        });
+      });
+
+
+      //주은 아파트 버스 정류장 36.79007, 127.0125
+      //온양 온천 역 36.78358, 127.0050
+      //아산 동양 고속 터미널 36.78440, 127.0141
+      //온양 권곡초 버스정류장 36.79011, 127.0125
+
+
 
       // 천안터미널 경로
       var coordinates = [

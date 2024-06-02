@@ -31,6 +31,15 @@
     var markers = [];
     var userMarker = null;
 
+    var CheonanBusStop = [
+      { name: "선문대 아산 캠퍼스", lat: 36.80034, lng: 127.0714 },
+      { name: "월봉청솔 1단지 아파트", lat: 36.80124, lng: 127.1163 },
+      { name: "쌍용동 롯데하이마트", lat: 36.79958, lng: 127.1271 },
+      { name: "천안역", lat: 36.81016, lng: 127.1431 },
+      { name: "하이렉스파 건너편", lat: 36.80042, lng: 127.1246 },
+      { name: "용암 마을", lat: 36.80149, lng: 127.1174 }
+    ];
+
     function initTmap() {
       map = new Tmapv2.Map("map_div", {
         center: new Tmapv2.LatLng(36.8002, 127.0715),
@@ -38,6 +47,23 @@
         height: "100%",
         zoom: 16,
       });
+
+      CheonanBusStop.forEach(function (stop) {
+        new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(stop.lat, stop.lng),
+          map: map,
+          icon: "./bus_stop.png",
+          iconSize: new Tmapv2.Size(24, 24), // Set icon size
+          title: stop.name
+        });
+      });
+
+      // 월봉청솔 1단지 아파트 36.80124, 127.1163
+      // 쌍용동 롯데하이마트 36.79958, 127.1271
+      // 천안역 36.81016, 127.1431
+      // 하이렉스파 건너편 36.80042, 127.1246
+      // 용암 마을 36.80149, 127.1174
+      
 
       // 천안터미널 경로
       var coordinates = [

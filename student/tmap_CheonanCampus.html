@@ -31,6 +31,15 @@
     var markers = [];
     var userMarker = null;
 
+    var CheonanBusStop = [
+      { name: "선문대 아산 캠퍼스", lat: 36.80034, lng: 127.0714 },
+      { name: "신방동 SK 주유소", lat: 36.78592, lng: 127.1294 },
+      { name: "청담정원 앞", lat: 36.78109, lng: 127.1573 },
+      { name: "천안 캠퍼스", lat: 36.77175, lng: 127.1641 },
+      { name: "청당정원 맞은편", lat: 36.78141, lng: 127.1578 },
+      { name: "현대 향촌", lat: 36.78998, lng: 127.1290 }
+    ];
+
     function initTmap() {
       map = new Tmapv2.Map("map_div", {
         center: new Tmapv2.LatLng(36.8002, 127.0715),
@@ -38,6 +47,25 @@
         height: "100%",
         zoom: 16,
       });
+
+      CheonanBusStop.forEach(function (stop) {
+        new Tmapv2.Marker({
+          position: new Tmapv2.LatLng(stop.lat, stop.lng),
+          map: map,
+          icon: "./bus_stop.png",
+          iconSize: new Tmapv2.Size(24, 36), // Set icon size
+          title: stop.name
+        });
+      });
+
+      // 선문대 아산 캠퍼스 36.80034, 127.0714
+      // 신방동 SK 주유소 36.78592, 127.1294
+      // 청담정원 앞 36.78109, 127.1573
+      // 천안 캠퍼스  36.77175, 127.1641
+      // 청당정원 맞은편 36.78141, 127.1578
+      // 현대 향촌 36.78998, 127.1290
+    
+
 
       // 천안터미널 경로
       var coordinates = [
